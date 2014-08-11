@@ -23,3 +23,6 @@ git commit -m “xxx”
 
 git remote add origin https://github.com/youlilly/olfactory_fmri_script.git
 git push origin master
+
+git remote set-url origin git@github.com:youlilly/simplestats.git
+git remote set-url upstream ....
