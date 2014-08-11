@@ -1,0 +1,25 @@
+
+Step 1 : Go to our repository from your browser, and click on the Fork button. Choose to fork it to your user name rather than any organizations.
+
+Step 2 : Clone it. From your terminal :
+
+$ git clone https://github.com/YOU/simplestats.git
+$ cd simplestats
+Step 3 :
+
+$ git remote add upstream https://github.com/UW-Madison-ACI/simplestats.git
+$ git remote -v
+origin  https://github.com/YOU/simplestats.git (fetch)
+origin  https://github.com/YOU/simplestats.git (push)
+upstream        https://github.com/UW-Madison-ACI/simplestats.git (fetch)
+upstream        https://github.com/UW-Madison-ACI/simplestats.git (push)
+
+git log
+git status
+
+git init
+git add .
+git commit -m “xxx”
+
+git remote add origin https://github.com/youlilly/olfactory_fmri_script.git
+git push origin master
