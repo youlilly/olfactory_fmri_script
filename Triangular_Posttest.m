@@ -18,12 +18,12 @@ subnum = input('Subject number? ');
 switch rem(subnum,2)
     case 0
         csp = 1;
-        StimR = [1 1 2; 2 2 1; 2 1 2; 2 1 1; 2 1 1];
-        cor_resp = [3 3 2 1 1];
+        StimR = [2 1 2; 2 1 1; 1 2 2; 1 1 2; 2 2 1; ];
+        cor_resp = [2 1 1 3 3];
     case 1
         csp = 5;
-        StimR = [4 5 4; 5 4 4; 4 4 5; 5 4 5; 5 5 4];
-        cor_resp = [2 1 3 2 3];
+        StimR = [4 5 4; 5 4 5; 5 5 4; 5 4 4; 4 4 5; ];
+        cor_resp = [2 2 3 1 3];
 end
 
 subinfo = sprintf('name_id = %s, sub no. = %d, CS=%d', name_id,subnum);
@@ -377,7 +377,7 @@ startwait = cogstd('sGetTime', -1) * 1000 ;
 while ((cogstd('sGetTime', -1) * 1000) < (startwait + 2000)) end
 
 cd C:\OCB\Data;
-eval(['save OCB_pre_triangular_sub' num2str(subnum) '_' name_id ';']);
+eval(['save OCB_post_triangular_sub' num2str(subnum) '_' name_id ';']);
 cd C:\OCB;
 %
 pause off
