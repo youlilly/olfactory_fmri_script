@@ -32,7 +32,7 @@ stimordH = repmat([1,2,3,4,5,8],1,1); stimordH = stimordH(randperm(6));
 stimordI = [4,3,5,2,1,8];
 stimordJ = repmat([1,2,3,4,5,8],1,1); stimordJ = stimordJ(randperm(6));
 
-simmordK = [8,3,2,4,1,5];
+stimordK = [8,3,2,4,1,5];
 stimordL = repmat([1,2,3,4,5,8],1,1); stimordL = stimordL(randperm(6));
 stimordM = [4,8,5,3,1,2];
 stimordN = repmat([1,2,3,4,5,8],1,1); stimordN = stimordN(randperm(6));
@@ -40,10 +40,36 @@ stimordO = [5,1,3,8,4,2];
 
 % the final stimR has 10trials/condition that specifies odor ID for each
 % trial
-StimR = [stimordA'; stimordB'; stimordC'; stimordD';  stimordE'; stimordF'; stimordG'; stimordH']; 
+StimR = [stimordA'; stimordB'; stimordC'; stimordD';  stimordE'; stimordF'; stimordG'; stimordH'; stimordI'; stimordJ'; stimordK'; stimordL'; stimordM'; stimordN';]; 
 
+%% Configure options for fMRI
+whichplace = 3;
+while whichplace>2
+    whichplace = input('At the Scanner (1) or Lab/Office (2) ? ');
+end
 
-SOA = 12000;
+whichkeys = 3;
+while whichkeys>2
+    whichkeys = input('Using MRI keypad (1) or Other (2) ? ');
+end
+
+% Experimental variables
+SOA = 14100;%Set for fMRI study
+TR = 2.35;
+nslices = 48; %changed from 32 to 48 by Wen on June/17th/2014
+ndummies = 6;
+%% Set up olfactometer, triggers & Cogent.
+%Configure equipment
+
+% Configuring Hardware
+usb2_config ; %Olfactometer configuration
+parallel_config ;  % For reading trigger on the parallel port
+
+% %For the parallel port
+global base_state;
+global parport_out;
+global parport_in;
+%
 
 %Prepare variables for later use
 odoronTimes  = [];
@@ -58,9 +84,6 @@ noresp_trials = [];
 noresp = 0;
 presses = 0;
 
-% Configuring Hardware
-usb_config ; %olfactometer
-dio_config_bb ; %shocker
 
 % Load and configure Cogent
 cgloadlib
@@ -80,32 +103,29 @@ gpd = cggetdata('gpd') ;
 ScrWid = gsd.ScreenWidth ;
 ScrHgh = gsd.ScreenHeight ;
 
-%Assing bottonbox presses for input
-Lkey = 7;  %Number7 assigned to "left" response
-Mkey = 8;  %Number8 assigned to "middle" response
-Rkey = 9;  %Number9 assigned to "right" response
 
+%% Present Instructions
 % Clear back page
 cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])
-
 cgfont('Arial',36)
 cgpencol(0,0,0)
-% Write out Sniff Text
+
+% Intructions ***needs to be further modified YY. 8/12/14
 cgtext('Sniff when you see the words',0, 2.4 * ScrHgh / 6 - 15);
 cgpencol(1, 0, 0); % red
 strSniff = '"SNIFF NOW"' ;
 cgtext(strSniff,0,1.8 * ScrHgh / 6 - 15);
 cgpencol(0,0,0); %black
-cgtext('Press the LEFT button if you think',0,1.2*ScrHgh / 6 - 15);
+cgtext('Press the XX button if you think',0,1.2*ScrHgh / 6 - 15);
 cgtext('it smells like odor A',0,0.6*ScrHgh/6 - 15);
-cgtext('Press the RIGHT button if you think',0,0*ScrHgh/6 - 15);
+cgtext('Press the XX button if you think',0,0*ScrHgh/6 - 15);
 cgtext('it smells like odor B',0,-0.6*ScrHgh/6 - 15);
-cgtext('Press the MIDDLE button if you think',0,-1.2*ScrHgh/6 - 15);
+cgtext('Press the XX button if you think',0,-1.2*ScrHgh/6 - 15);
 cgtext('there is NO smell',0,-1.8 * ScrHgh/6 - 15);
 cgflip
 
 pause on
-pause(8);
+pause(12);
 
 % present crosshair
 cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])
@@ -114,31 +134,73 @@ cgpencol(1,0,0); %red
 cgtext('+',0,0);
 cgflip
 
-pause(5)
+cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])
 
+if whichplace == 1  % i.e., scanning study with scanner pulses
+    %    clearserialbytes(PC);
+    
+    % Wait here for the first bold rep trigger to occur.
+    parallel_wait;
+    
+    % Grab the time
+    scanon = cogstd('sGetTime', -1) * 1000;
+    
+else  % i.e., pilot study in absence of scanner pulses
+    scanon = cogstd('sGetTime', -1) * 1000;
+    pause(5)
+end
+
+% Change crosshair color to yellow.  This is to indicate to the experimenters
+% that the parallel port received the trigger and is now getting baseline
+% information.  This crosshairs will stay up for 30? seconds, the
+% recommended length of baseline data gathering.
+cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])
+cgfont('Arial',60);
+cgpencol(1,1,0); %yellow
+cgtext('+',0,0);
+cgflip
+
+mrigo = sprintf('MRI scanner ON time at %d ms',scanon);
+log_string(mrigo);
+mristarttime = scanon;
+mristarttimes = sprintf('MRI scanner first trigger ON time at %d ms',mristarttime);
+log_string(mristarttimes);
+
+%Starts recording at the proper time, on the seventh TR (first 6 TRs are
+%dummies, used to get scanner to equilibrium)
+if whichplace == 1  % scanner
+    % wait until get close to all dummy volumes = TR 2s * 6 vol
+    
+    while ((cogstd('sGetTime', -1) * 1000) < mristarttime + (ndummies * TR * 1000))
+        
+        % this way, by subtr. 1000, there is one sec before next '53'
+        % thus, the first timestamp will occur at start of 7th dummy
+    end
+    
+else
+    pause(11);
+end
+
+timectr=[];
+resp_list=[];
+rt_list=[];
+
+
+%% Stimulus presentation loop- 15 trials/cond * 6 cond = 90 trials
 
 for i = 1:length(StimR)
 
-
-    odorid=StimR(i);
-    if odorid < 6
-        odorcond=odorid;
-    else
-        odorcond=6; %condition 6 coded for air trials
+    trialtime = cogstd('sGetTime', -1) * 1000 ;
+    if (i == 1)
+        scanon_7th = trialtime;
+        starttime  = trialtime;  %this is the 1st 53 input after the 6th dummy
+        parallel_acquire; %equivalent of dio_acquire here for 7th dummy
     end
     
-    odorindex = [odorindex odorcond];
-    
-    trialtime = cogstd('sGetTime', -1) * 1000 ;
     startTimes=[startTimes trialtime];%log the beginning of each trial
-    
-    %Setting up response variables    
-    response_time = 0 ; %
-    response_key = 0 ;  
-    a = getvalue(resp7); %number 7, odor A response
-    b = getvalue(resp8); %number 8, no odor response
-    c = getvalue(resp9); %number 9, odor B response
-    ansset = 0; 
+        
+    odorid=StimR(i);
+    odorindex = [odorindex odorid];
     
     %Get ready cues
     readycue='GET READY !';

@@ -99,7 +99,8 @@ end
 %odorlist = [2,3,4,1,5,3,4,5,2,1,4,2,3,1,5,2,3,1,5,4;];%odor list for the first 3 subjects in pilot3
 %odorlist = [4,3,2,1,5,4,5,2,3,1,2,4,3,1,5,3,2,5,4,1;];%odor list for sub4
 %odorlist = [2,3,4,1,5,2,5,4,3,1,3,4,2,1,5,1,2,5,4,3;];%odor list for sub5
-odorlist = [3,1,4,5,2,3,5,2,4,1,2,4,3,1,5,2,1,3,5,4;];%odor list for sub6
+%odorlist = [3,1,4,5,2,3,5,2,4,1,2,4,3,1,5,2,1,3,5,4;];%odor list for sub6
+odorlist = [4,3,5,2,1,3,2,4,1,5,4,5,3,1,2,5,1,3,4,2];
 
 odorbf1 = [];
 odorbf2 = [];
@@ -109,7 +110,7 @@ odorbf5 = [];
 
 odordiff = odorlist(1:end-1) - odorlist(2:end);
 
-for i = 1:19
+for i = 1:15
     switch odorlist(i+1)
         case (1)
             odorbf1 = [odorbf1 odordiff(i)];
