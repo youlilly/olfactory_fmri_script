@@ -1,5 +1,6 @@
 %% preConditiong task of OCF (olfactory conditioning fMRI) study
 % Created by YY 
+% **** indicates places that need discussion
 % Last update: 8/12/14
 
 clear all
@@ -110,7 +111,7 @@ cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])
 cgfont('Arial',36)
 cgpencol(0,0,0)
 
-% Intructions ***needs to be further modified YY. 8/12/14
+% Intructions **** needs to be further modified YY. 8/12/14
 cgtext('Sniff when you see the words',0, 2.4 * ScrHgh / 6 - 15);
 cgpencol(1, 0, 0); % red
 strSniff = '"SNIFF NOW"' ;
@@ -202,13 +203,26 @@ for i = 1:length(StimR)
     odorid=StimR(i);
     odorindex = [odorindex odorid];
     
-    %Get ready cues
+    %**** need to figure out the Port and Odor ID assignment here
+    airid = 8;
+    
+    %Get ready cues **** need to discuss the reason for a word/count-down
+    %selection vs. a plain cross
     readycue='GET READY !';
     cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])  % Clear back screen to white
     cgpencol(0,0,0)  % Black
     cgtext(readycue,0,0);
     cgflip
     pause(2);  % Wait for two seconds
+%         
+%     readycue='+';
+%     cgrect(0, 0, ScrWid, ScrHgh, [0.6 0.6 0.6])  % Clear back screen to white
+%     cgpencol(0.3,0.3,0.3)  % Mid-grey fixation for 2 seconds
+%     cgfont('Arial',48)
+%     cgtext(readycue,0,0.15);
+%     cgflip
+%     pause(2);  % Wait for two seconds
+%     
 
     cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])  % Clear back screen to white
     cgtext('3',0,0);
@@ -228,22 +242,23 @@ for i = 1:length(StimR)
     
     % *** TURN ODOR #1 ON ***
     while ((cogstd('sGetTime', -1) * 1000) < (t1 + 2092)) end  
-    usb_line_on(odorid);
-    post_odor_on = cogstd('sGetTime', -1) * 1000 ;
-
+    usb2_line_on(odorid,0); %Use PortA, Channel No.odorid
+    odor_on = cogstd('sGetTime', -1) * 1000 ;
+    parallel_acquire; % send trigger to Physio
+    
     % *** SNIFF CUE #1 ON ***
     cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])  % Clear back screen to white
     cgtext('SNIFF NOW',0,0);
     cgflip
     
-    while ((cogstd('sGetTime', -1) * 1000) < (post_odor_on + 150)) end
+    while ((cogstd('sGetTime', -1) * 1000) < (odor_on + 150)) end
     
-    while ((cogstd('sGetTime', -1) * 1000) < (post_odor_on + 7000))
-        if ((cogstd('sGetTime', -1) * 1000) > (post_odor_on + 2000))
+    while ((cogstd('sGetTime', -1) * 1000) < (odor_on + 7000))
+        if ((cogstd('sGetTime', -1) * 1000) > (odor_on + 2000))
 
             % *** ODOR AND SNIFF CUE OFF ***
             % turn off the smell
-            usb_line_on(0);
+            usb2_line_on(0,0);
 
             % log the odor off time
             odoroff = (cogstd('sGetTime', -1) * 1000) ;
@@ -257,26 +272,10 @@ for i = 1:length(StimR)
 %         cgtext('M: No Odor',0,0);
 %         cgtext('R: Odor B',0,-60);
 %         cgflip
-            
-        if getvalue(resp7) ~= a 
-            response_key = Lkey;
-            ansset = 1;
-            rt_current = (cogstd('sGetTime', -1) * 1000) ;
-            response_time = rt_current - post_odor_on;
-            
-        elseif getvalue(resp8) ~= b
-            response_key = Mkey;
-            ansset = 1;
-            rt_current = (cogstd('sGetTime', -1) * 1000) ;
-            response_time = rt_current - post_odor_on;  
-            
-        elseif getvalue(resp9) ~= c
-            response_key = Rkey;
-            ansset = 1;
-            rt_current = (cogstd('sGetTime', -1) * 1000) ;
-            response_time = rt_current - post_odor_on;
-            
-        end            
+
+%    ****Response Logging
+
+       
     end
     
     if (response_time ~= 0)
@@ -284,8 +283,8 @@ for i = 1:length(StimR)
                 log_string(key_str) ;
     end
     
-    odoronTimes = [odoronTimes post_odor_on];
-    odordurTimes = [odordurTimes odoroff-post_odor_on];
+    odoronTimes = [odoronTimes odor_on];
+    odordurTimes = [odordurTimes odoroff-odor_on];
     
     
     if ansset > 0 %if button press occurred
@@ -303,7 +302,7 @@ for i = 1:length(StimR)
     end
     
     y=sprintf('Odor Cond %d sniffed at %d ms for %d ms duration',...
-    odorid,post_odor_on,odoroff-post_odor_on);
+    odorid,odor_on,odoroff-odor_on);
     log_string(y);
    % log_string(buttstr);
     log_string(num2str(response_key));
