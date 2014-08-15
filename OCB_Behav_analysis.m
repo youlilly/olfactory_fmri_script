@@ -1,9 +1,42 @@
-%% Collate intensity ratings
+%% OCB Behavioral analyzers - for piloting experiments
 
-Subinitials = ['AC';'NH';'AG';'HK';'CR';'AJ'; 'SR'; 'XT'; 'JF'; 'HN'; 'QB'; 'AG' ];
+Subinitials = ['AC';'NH';'AG';'HK';'CR';'AJ'; 'SR'; 'XT'; 'JF'; 'HN'; 'QB'; 'AG'; 'AF'; 'QL'; 'BT'; 'YZ'; 'SL'; 'YZ'; 'TL'];
+
+%% Collate intensity ratings
+% Prerating "odor_sorted": odorid visindex intensityindex familiarityindex pungencyindex
+% Postrating "odor_sorted": odorid riskindex visindex intensityindex
+% familiarityindex pungencyindex
+
+allsubs = 1:19;
+
 %pre-rating
 PreRatings = [];
-for sub = [9 11 12]
+for sub = allsubs
+initials = Subinitials(sub,:);    
+eval(['load OCB_pre_rating_olf_sub' num2str(sub) '_' initials ';']);
+valence = odor_sorted(:,2)';
+PreRatings = [PreRatings; sub valence];
+end
+
+%post-rating
+PostRatings = [];
+for sub = [2:19]
+initials = Subinitials(sub,:);    
+eval(['load OCB_risk_rating_olf_sub' num2str(sub) '_' initials ';']);
+valence = odor_sorted(:,3)';
+PostRatings = [PostRatings; sub valence];
+end
+
+%% Collate intensity ratings
+% Prerating "odor_sorted": odorid visindex intensityindex familiarityindex pungencyindex
+% Postrating "odor_sorted": odorid riskindex visindex intensityindex
+% familiarityindex pungencyindex
+
+allsubs = 1:19;
+
+%pre-rating
+PreRatings = [];
+for sub = allsubs
 initials = Subinitials(sub,:);    
 eval(['load OCB_pre_rating_olf_sub' num2str(sub) '_' initials ';']);
 inten = odor_sorted(:,3)';
@@ -12,7 +45,7 @@ end
 
 %post-rating
 PostRatings = [];
-for sub = [9 11 12]
+for sub = [2:19]
 initials = Subinitials(sub,:);    
 eval(['load OCB_risk_rating_olf_sub' num2str(sub) '_' initials ';']);
 inten = odor_sorted(:,4)';
@@ -21,50 +54,84 @@ end
 
 
 %% Collate familiarity ratings
-% in "odor_sorted": odorid visindex intensityindex familiarityindex pungencyindex
-
-Subinitials = ['AC';'NH';'AG';'HK';'CR';'AJ'; 'SR'; 'XT'; 'JF'; 'HN'; 'QB'; 'AG' ];
+% Prerating "odor_sorted": odorid visindex intensityindex familiarityindex pungencyindex
+% Postrating "odor_sorted": odorid riskindex visindex intensityindex
+% familiarityindex pungencyindex
 %pre-rating
 PreRatings = [];
-for sub = 1:12
+for sub = 1:19
 initials = Subinitials(sub,:);    
 eval(['load OCB_pre_rating_olf_sub' num2str(sub) '_' initials ';']);
-inten = odor_sorted(:,4)';
-PreRatings = [PreRatings; sub inten];
-end
-
-%% Collate risk ratings
-
-Subinitials = ['AC';'NH';'AG';'HK';'CR';'AJ'; 'SR'; 'XT'; 'JF'; 'HN'; 'QB'; 'AG' ];
+famil = odor_sorted(:,4)';
+PreRatings = [PreRatings; sub famil];
+end 
 
 
 %post-rating
 PostRatings = [];
-for sub = [9 11 12]
+for sub = 2:19
 initials = Subinitials(sub,:);    
 eval(['load OCB_risk_rating_olf_sub' num2str(sub) '_' initials ';']);
+famil = odor_sorted(:,5)';
+PostRatings = [PostRatings; sub famil];
+end
+
+%% Collate pungency ratings
+% Prerating "odor_sorted": odorid visindex intensityindex familiarityindex pungencyindex
+% Postrating "odor_sorted": odorid riskindex visindex intensityindex
+% familiarityindex pungencyindex
+%pre-rating
+PreRatings = [];
+for sub = 1:19
+initials = Subinitials(sub,:);    
+eval(['load OCB_pre_rating_olf_sub' num2str(sub) '_' initials ';']);
+pung = odor_sorted(:,5)';
+PreRatings = [PreRatings; sub pung];
+end 
+
+
+%post-rating
+PostRatings = [];
+for sub = 2:19
+initials = Subinitials(sub,:);    
+eval(['load OCB_risk_rating_olf_sub' num2str(sub) '_' initials ';']);
+pung = odor_sorted(:,6)';
+PostRatings = [PostRatings; sub pung];
+end
+
+%% Collate risk ratings
+%post-rating
+PostRatings = [];
+for sub = 2:19
+initials = Subinitials(sub,:);    
+eval(['load OCB_risk_rating_olf_sub' num2str(sub) '_' initials ';']);
+
+if rem(sub,2) == 0
 risk = odor_sorted(:,2)';
+else
+risk = [odor_sorted(5,2) odor_sorted(4,2) odor_sorted(3,2) odor_sorted(2,2) odor_sorted(2,2)];
+end
+
 PostRatings = [PostRatings; sub risk];
 end
 
 
 %% Collate triangular test pre-post ratings
 
-Subinitials = ['AC';'NH';'AG';'HK';'CR';'AJ'; 'SR'; 'XT'; 'JF'; 'HN'; 'QB'; 'AG' ];
 %pre-rating
 AllAcc = [];
 
-for sub = [9 11 12]
+for sub = [9 11:19]
 initials = Subinitials(sub,:);    
 eval(['load OCB_pre_triangular_sub' num2str(sub) '_' initials ' acc rt;']);
 mRT = mean(rt);
 AllAcc = [AllAcc; sub acc/5*100 mRT];
 end
 
-%post-rating
+% post-rating
 AllpostAcc = [];
 
-for sub = [9 11 12]
+for sub = [9 11:19]
 initials = Subinitials(sub,:);    
 eval(['load OCB_post_triangular_sub' num2str(sub) '_' initials ' acc rt;']);
 mRT = mean(rt);
@@ -73,12 +140,11 @@ end
 
 %% pre-Cond performance
 
-Subinitials = ['AC';'NH';'AG';'HK';'CR';'AJ'; 'SR'; 'XT'; 'JF'; 'HN'; 'QB'; 'AG' ];
 %pre-rating
 AllodorA = [];
 AllSuds = [];
 
-for sub = [9 11 12]
+for sub = 1:19
 initials = Subinitials(sub,:);    
 eval(['load OCB_beh_precond_sub' num2str(sub) '_' initials ';']);
 odor1 = rtypes(find(rtypes(:,2)==1), 3);
