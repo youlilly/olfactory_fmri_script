@@ -2,7 +2,7 @@
 
 Subinitials = ['AC';'NH';'AG';'HK';'CR';'AJ'; 'SR'; 'XT'; 'JF'; 'HN'; 'QB'; 'AG'; 'AF'; 'QL'; 'BT'; 'YZ'; 'SL'; 'YZ'; 'TL'];
 
-%% Collate intensity ratings
+%% Collate Pleasantness ratings
 % Prerating "odor_sorted": odorid visindex intensityindex familiarityindex pungencyindex
 % Postrating "odor_sorted": odorid riskindex visindex intensityindex
 % familiarityindex pungencyindex
@@ -102,7 +102,7 @@ end
 %% Collate risk ratings
 %post-rating
 PostRatings = [];
-for sub = 2:19
+for sub = [5:2:19]
 initials = Subinitials(sub,:);    
 eval(['load OCB_risk_rating_olf_sub' num2str(sub) '_' initials ';']);
 
@@ -300,7 +300,7 @@ AllpostodorB  = [];
 AllpostSuds = [];
 AllpostodorB_rt = [];%average RTs for all/correct odorB response
 
-for sub = [5:2:19]
+for sub = 4:19%[5:2:19]
 initials = Subinitials(sub,:);    
 eval(['load OCB_beh_postcond_sub' num2str(sub) '_' initials ';']);
 
@@ -323,6 +323,19 @@ odor2B = length(find(odor2 == 9)) /length(odor2)*100 % proportion of odor A judg
 odor3B = length(find(odor3 == 9)) /length(odor3)*100 % proportion of odor A judgment
 odor4B = length(find(odor4 == 9)) /length(odor4)*100 % proportion of odor A judgment
 odor5B = length(find(odor5 == 9)) /length(odor5)*100 % proportion of odor A judgment
+
+odor1rt = [odor1 rtypes(find(rtypes(:,2)==1), 4)];
+odor2rt = [odor2 rtypes(find(rtypes(:,2)==2), 4)];
+odor3rt = [odor3 rtypes(find(rtypes(:,2)==3), 4)];
+odor4rt = [odor4 rtypes(find(rtypes(:,2)==4), 4)];
+odor5rt = [odor5 rtypes(find(rtypes(:,2)==5), 4)];
+
+odor1rt = odor1rt(find(odor1rt(:,1)==7|odor1rt(:,1)==9),2); 
+odor2rt = odor2rt(find(odor2rt(:,1)==7|odor2rt(:,1)==9),2);
+odor3rt = odor3rt(find(odor3rt(:,1)==7|odor3rt(:,1)==9),2);
+odor4rt = odor4rt(find(odor4rt(:,1)==7|odor4rt(:,1)==9),2);
+odor5rt = odor5rt(find(odor5rt(:,1)==7|odor5rt(:,1)==9),2);
+
 
 AllpostodorB = [AllpostodorB; sub odor5B odor4B odor3B odor2B odor1B];
 AllpostSuds = [AllpostSuds; sub SUDS2]
