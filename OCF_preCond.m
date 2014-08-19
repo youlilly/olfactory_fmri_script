@@ -1,7 +1,7 @@
 %% preConditiong task of OCF (olfactory conditioning fMRI) study
 % Created by YY 
 % **** indicates places that need discussion
-% Last update: 8/12/14
+% Last update: 8/19/14
 
 clear all
 
@@ -287,7 +287,7 @@ for i = 1:length(StimR)
     odordurTimes = [odordurTimes odoroff-odor_on];
     
     
-    if ansset > 0 %if button press occurred
+    if ansset > 0 % ****if button press occurred
     allresp = [allresp response_time]; 
     presses = presses + 1;
     
