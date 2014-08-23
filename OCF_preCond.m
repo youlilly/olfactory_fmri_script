@@ -21,6 +21,8 @@ subinfo = sprintf('name_id = %s, sub no. = %d, ethnicity=%s, age = %d, gender=%s
 
 %% Make stimulus matrix, odorid = 1 (A80%), 2 (A65%), 3 (A50%), 4 (A35%), 5 (A20%), 8 (air? double check)
 %15 trials/condition;
+rand('state',100*subnum+3); %ensure true randomization for each run
+
 stimordA = [3,1,4,8,5,2];
 stimordB = repmat([1,2,3,4,5,8],1,1); stimordB = stimordB(randperm(6)); %guarantees no more than 2 same odors in a role
 stimordC = [3,8,5,2,4,1];
@@ -39,7 +41,7 @@ stimordM = [4,8,5,3,1,2];
 stimordN = repmat([1,2,3,4,5,8],1,1); stimordN = stimordN(randperm(6));
 stimordO = [5,1,3,8,4,2];
 
-% the final stimR has 10trials/condition that specifies odor ID for each
+% the final stimR has 15trials/condition that specifies odor ID for each
 % trial
 StimR = [stimordA'; stimordB'; stimordC'; stimordD';  stimordE'; stimordF'; stimordG'; stimordH'; stimordI'; stimordJ'; stimordK'; stimordL'; stimordM'; stimordN';]; 
 
