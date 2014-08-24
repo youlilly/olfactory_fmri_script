@@ -119,11 +119,11 @@ cgpencol(1, 0, 0); % red
 strSniff = '"SNIFF NOW"' ;
 cgtext(strSniff,0,1.8 * ScrHgh / 6 - 15);
 cgpencol(0,0,0); %black
-cgtext('Press the XX button if you think',0,1.2*ScrHgh / 6 - 15);
+cgtext('Press the GREEN button if you think',0,1.2*ScrHgh / 6 - 15);
 cgtext('it smells like odor A',0,0.6*ScrHgh/6 - 15);
-cgtext('Press the XX button if you think',0,0*ScrHgh/6 - 15);
+cgtext('Press the YELLOW button if you think',0,0*ScrHgh/6 - 15);
 cgtext('it smells like odor B',0,-0.6*ScrHgh/6 - 15);
-cgtext('Press the XX button if you think',0,-1.2*ScrHgh/6 - 15);
+cgtext('Press the BLUE button if you think',0,-1.2*ScrHgh/6 - 15);
 cgtext('there is NO smell',0,-1.8 * ScrHgh/6 - 15);
 cgflip
 
@@ -205,8 +205,22 @@ for i = 1:length(StimR)
     odorid=StimR(i);
     odorindex = [odorindex odorid];
     
-    %**** need to figure out the Port and Odor ID assignment here
-    airid = 8;
+    %** need to figure out the Port and Odor ID assignment here - done;
+    %testing required
+    switch odorid 
+        case (1) 
+            portid = 2; %on PortB
+        case (2)
+            portid = 7; %on PortB
+        case (3)
+            portid = 4; %on PortB
+        case (4)
+            portid = 14; %on PortA
+        case (5)
+            portid = 11; %on PortA
+        case (8)
+            portid = 16; %on PortA
+    end
     
     %Get ready cues **** need to discuss the reason for a word/count-down
     %selection vs. a plain cross
@@ -243,8 +257,14 @@ for i = 1:length(StimR)
     cgflip
     
     % *** TURN ODOR #1 ON ***
-    while ((cogstd('sGetTime', -1) * 1000) < (t1 + 2092)) end  
-    usb2_line_on(odorid,0); %Use PortA, Channel No.odorid
+    while ((cogstd('sGetTime', -1) * 1000) < (t1 + 2092)) end
+    if portid > 8
+            usb2_line_on(portid-8,0); %Use PortA, Channel No.odorid
+    else
+            usb2_line_on(0,portid);
+    end
+    
+
     odor_on = cogstd('sGetTime', -1) * 1000 ;
     parallel_acquire; % send trigger to Physio
     
@@ -253,7 +273,13 @@ for i = 1:length(StimR)
     cgtext('SNIFF NOW',0,0);
     cgflip
     
-    while ((cogstd('sGetTime', -1) * 1000) < (odor_on + 150)) end
+    while ((cogstd('sGetTime', -1) * 1000) < (odor_on + 150)) end    
+    
+% Prepare for response logging    
+
+    button_pressed=false;
+    key=[];
+    keyStrings = {'b','y','g','r'};
     
     while ((cogstd('sGetTime', -1) * 1000) < (odor_on + 7000))
         if ((cogstd('sGetTime', -1) * 1000) > (odor_on + 2000))
@@ -275,13 +301,48 @@ for i = 1:length(StimR)
 %         cgtext('R: Odor B',0,-60);
 %         cgflip
 
-%    ****Response Logging
+%    ** Response Logging: done; need testing
+        while isempty(key)    
+            [key,rtptb] = GetKey(keyStrings,2.5,GetSecs,-1);
+            t_in_cog = (cogstd('sGetTime', -1) * 1000);
+        end
+        
+        response_time = t_in_cog - odor_on;
+        
+        if ~isempty(key) && button_pressed == false
 
-       
-    end
+            if iscell(key)
+                if key{1,1} == 'b' || key{1,1} == 'y' || key{1,1} == 'g' || key{1,1} == 'r'
+                    key = key{1,1};
+                else
+                    key = key{1,2};
+                end
+            end
+            
+            if key=='b' % No odor 
+                but_resp=1;
+                allresp = [allresp; but_resp response_time];
+                button_pressed = true;
+            elseif key=='y' % Odor B
+                but_resp=2;
+                allresp = [allresp; but_resp response_time];
+                button_pressed = true;
+            elseif key=='g' % Odor A
+                but_resp=3;
+                allresp = [allresp; but_resp response_time];
+                button_pressed = true;
+
+            else
+                but_resp=NaN;
+                allresp = [allresp; but_resp response_time];
+                button_pressed = true;
+            end
+        end
+        
+     end
     
     if (response_time ~= 0)
-                key_str = sprintf ('Key\t%d\tDOWN\tat\t%0.1f\n', response_key, response_time) ;
+                key_str = sprintf ('Key\t%d\tDOWN\tat\t%0.1f\n', but_resp, response_time) ;
                 log_string(key_str) ;
     end
     
@@ -289,16 +350,13 @@ for i = 1:length(StimR)
     odordurTimes = [odordurTimes odoroff-odor_on];
     
     
-    if ansset > 0 % ****if button press occurred
-    allresp = [allresp response_time]; 
+    if button_pressed % ****if button press occurred
     presses = presses + 1;
-    
-    rtypes = [rtypes; i odorid response_key response_time]; %collate all responses in the rtypes matrix
+ 
+    rtypes = [rtypes; i odorid but_resp response_time]; %collate all responses in the rtypes matrix
     
     else    
     buttstr = 'NO BUTTON PRESS';
-    response_key = NaN;
-    allresp = [allresp response_key] ; %#ok<AGROW>
     noresp = noresp + 1;
     noresp_trials = [noresp_trials i] ;  %#ok<AGROW>        
     end
@@ -341,9 +399,9 @@ cgpencol(0,0,0);
 
 %Which buttons have the function of increase, decrease, or finishing the
 %question
-r_inc = 2;
-r_dec = 1;
-r_sel = 4;
+r_inc = 3; %green button
+r_dec = 2; %yellow button
+r_sel = 1; %blue button
 but_resp=0;
 
 pause on;
@@ -518,5 +576,6 @@ while ((cogstd('sGetTime', -1) * 1000) < (startwait + 6000)) end
 
 pause off
 log_finish;
-dio_finish_bb ;
+usb2_finish ;
+parallel_finish ;
 cgshut
