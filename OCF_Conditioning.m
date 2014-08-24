@@ -1,11 +1,11 @@
 %% Conditiong block of OCF (olfactory conditioning fMRI) study
 % Created by YY 
 % **** indicates places that need discussion
-% Last update: 8/19/14
+% Last update: 8/24/14
 
 clear all
 
-dm = 'C:\My Experiments\Wen_Li\OCF\m_scripts'; %make sure to create this folder in the scanner computer
+dm = 'C:\My Experiments\Wen_Li\OCF'; %make sure to create this folder in the scanner computer
 cd (dm);
 %
 log_file_name = input('Log file name ?','s');
@@ -232,7 +232,7 @@ rt_list=[];
 
 %% Stimulus presentation loop- 3 trials/cond * 3 cond = 21 trials
 
-for i = 1:length(StimR)
+for i = 1:5%length(StimR)
 
     odorid=StimR(i,1);
     voiceid = StimR(i,2);
@@ -385,42 +385,44 @@ for i = 1:length(StimR)
         end
         
 %     ** Response Logging: done; need testing
-        while isempty(key)    
-            [key,rtptb] = GetKey(keyStrings,2.5,GetSecs,-1);
-            t_in_cog = (cogstd('sGetTime', -1) * 1000);
-        end
+        response_time = 0;
         
-        response_time = t_in_cog - odor_on;
-        
-        if ~isempty(key) && button_pressed == false
-
-            if iscell(key)
-                if key{1,1} == 'b' || key{1,1} == 'y' || key{1,1} == 'g' || key{1,1} == 'r'
-                    key = key{1,1};
-                else
-                    key = key{1,2};
-                end
-            end
-            
-            if key=='b' % No odor 
-                but_resp=1;
-                allresp = [allresp; but_resp response_time];
-                button_pressed = true;
-            elseif key=='y' % Odor B
-                but_resp=2;
-                allresp = [allresp; but_resp response_time];
-                button_pressed = true;
-            elseif key=='g' % Odor A
-                but_resp=3;
-                allresp = [allresp; but_resp response_time];
-                button_pressed = true;
-
-            else
-                but_resp=NaN;
-                allresp = [allresp; but_resp response_time];
-                button_pressed = true;
-            end
-        end
+%         while isempty(key)    
+%             [key,rtptb] = GetKey(keyStrings,2.5,GetSecs,-1);
+%             t_in_cog = (cogstd('sGetTime', -1) * 1000);
+%         end
+%         
+%         response_time = t_in_cog - odor_on;
+%         
+%         if ~isempty(key) && button_pressed == false
+% 
+%             if iscell(key)
+%                 if key{1,1} == 'b' || key{1,1} == 'y' || key{1,1} == 'g' || key{1,1} == 'r'
+%                     key = key{1,1};
+%                 else
+%                     key = key{1,2};
+%                 end
+%             end
+%             
+%             if key=='b' % No odor 
+%                 but_resp=1;
+%                 allresp = [allresp; but_resp response_time];
+%                 button_pressed = true;
+%             elseif key=='y' % Odor B
+%                 but_resp=2;
+%                 allresp = [allresp; but_resp response_time];
+%                 button_pressed = true;
+%             elseif key=='g' % Odor A
+%                 but_resp=3;
+%                 allresp = [allresp; but_resp response_time];
+%                 button_pressed = true;
+% 
+%             else
+%                 but_resp=NaN;
+%                 allresp = [allresp; but_resp response_time];
+%                 button_pressed = true;
+%             end
+%         end
       
     end
     
@@ -439,7 +441,7 @@ for i = 1:length(StimR)
     rtypes = [rtypes; i odorid but_resp response_time]; %collate all responses in the rtypes matrix
     
     else    
-    buttstr = 'NO BUTTON PRESS';
+    but_resp = NaN;
     noresp = noresp + 1;
     noresp_trials = [noresp_trials i] ;  %#ok<AGROW>        
     end
@@ -448,7 +450,7 @@ for i = 1:length(StimR)
     odorid,odor_on,odoroff-odor_on);
     log_string(y);
     %log_string(buttstr);
-    log_string(num2str(response_key));
+    log_string(num2str(but_resp));
     log_string('');
 
     while ((cogstd('sGetTime', -1) * 1000) < (trialtime + SOA))
@@ -466,9 +468,12 @@ results.behav.rtypes = rtypes;
 results.behav.noresp = noresp_trials;
 results.behav.presses = presses;
 
-cd C:\OCB\Data;
-eval(['save OCB_beh_cond_sub' num2str(subnum) '_' name_id ';']);
-cd C:\OCB;
+%% Saving data
+
+dmat = 'C:\My Experiments\Wen_Li\OCF\Data';
+cd(dmat);
+eval(['save OCF_beh_cond_sub' num2str(subnum) '_' name_id ';']);
+cd(dm)
 
 % Clear back page
 cgrect(0, 0, ScrWid, ScrHgh, [1 1 1]) ;
