@@ -161,11 +161,11 @@ cgpencol(1, 0, 0); % red
 strSniff = '"SNIFF NOW"' ;
 cgtext(strSniff,0,1.8 * ScrHgh / 6 - 15);
 cgpencol(0,0,0); %black
-cgtext('Press the GREEN button if you think',0,1.2*ScrHgh / 6 - 15);
+cgtext('Press the BLUE button if you think',0,1.2*ScrHgh / 6 - 15);
 cgtext('it smells like odor A',0,0.6*ScrHgh/6 - 15);
 cgtext('Press the YELLOW button if you think',0,0*ScrHgh/6 - 15);
 cgtext('it smells like odor B',0,-0.6*ScrHgh/6 - 15);
-cgtext('Press the BLUE button if you think',0,-1.2*ScrHgh/6 - 15);
+cgtext('Press the GREEN button if you think',0,-1.2*ScrHgh/6 - 15);
 cgtext('there is NO smell',0,-1.8 * ScrHgh/6 - 15);
 cgflip
 
@@ -321,6 +321,7 @@ for i = 1:5%length(StimR)
     % Prepare for response logging    
 
     button_pressed=false;
+    odorofftrue = 0;
     key=[];
     keyStrings = {'b','y','g','r'};
     
@@ -381,13 +382,13 @@ for i = 1:5%length(StimR)
 
             % log the odor off time
             odoroff = (cogstd('sGetTime', -1) * 1000) ;
-            
+            odorofftrue = 1;
         end
         
 %     ** Response Logging: done; need testing
         response_time = 0;
         
-        while isempty(key)    
+        while isempty(key)  && odorofftrue == 1  
             [key,rtptb] = GetKey(keyStrings,2.5,GetSecs,-1);
             t_in_cog = (cogstd('sGetTime', -1) * 1000);
         end
@@ -404,7 +405,7 @@ for i = 1:5%length(StimR)
                 end
             end
             
-            if key=='b' % No odor 
+            if key=='b' % Odor A
                 but_resp=1;
                 allresp = [allresp; but_resp response_time];
                 button_pressed = true;
@@ -412,7 +413,7 @@ for i = 1:5%length(StimR)
                 but_resp=2;
                 allresp = [allresp; but_resp response_time];
                 button_pressed = true;
-            elseif key=='g' % Odor A
+            elseif key=='g' % No odor
                 but_resp=3;
                 allresp = [allresp; but_resp response_time];
                 button_pressed = true;

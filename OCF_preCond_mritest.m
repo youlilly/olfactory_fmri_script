@@ -119,11 +119,11 @@ cgpencol(1, 0, 0); % red
 strSniff = '"SNIFF NOW"' ;
 cgtext(strSniff,0,1.8 * ScrHgh / 6 - 15);
 cgpencol(0,0,0); %black
-cgtext('Press the GREEN button if you think',0,1.2*ScrHgh / 6 - 15);
+cgtext('Press the BLUE button if you think',0,1.2*ScrHgh / 6 - 15);
 cgtext('it smells like odor A',0,0.6*ScrHgh/6 - 15);
 cgtext('Press the YELLOW button if you think',0,0*ScrHgh/6 - 15);
 cgtext('it smells like odor B',0,-0.6*ScrHgh/6 - 15);
-cgtext('Press the BLUE button if you think',0,-1.2*ScrHgh/6 - 15);
+cgtext('Press the GREEN button if you think',0,-1.2*ScrHgh/6 - 15);
 cgtext('there is NO smell',0,-1.8 * ScrHgh/6 - 15);
 cgflip
 
@@ -305,7 +305,7 @@ for i = 1:5%length(StimR)
         response_time = 0;
         
         while isempty(key)    
-            [key,rtptb] = GetKey(keyStrings,2.5,GetSecs,-1);
+            [key,rtptb] = GetKey(keyStrings,5,GetSecs,-1);
             t_in_cog = (cogstd('sGetTime', -1) * 1000);
         end
         
@@ -321,7 +321,7 @@ for i = 1:5%length(StimR)
                 end
             end
             
-            if key=='b' % No odor 
+            if key=='b' % Odor A
                 but_resp=1;
                 allresp = [allresp; but_resp response_time];
                 button_pressed = true;
@@ -329,11 +329,10 @@ for i = 1:5%length(StimR)
                 but_resp=2;
                 allresp = [allresp; but_resp response_time];
                 button_pressed = true;
-            elseif key=='g' % Odor A
+            elseif key=='g' % No odor
                 but_resp=3;
                 allresp = [allresp; but_resp response_time];
                 button_pressed = true;
-
             else
                 but_resp=NaN;
                 allresp = [allresp; but_resp response_time];
@@ -394,6 +393,11 @@ startwait = cogstd('sGetTime', -1) * 1000 ;
 while ((cogstd('sGetTime', -1) * 1000) < (startwait + 3000)) 
 end %blank screen for 3 sec
 
+dmat = 'C:\My Experiments\Wen_Li\OCF\Data';
+cd(dmat);
+eval(['save OCF_beh_precond_sub' num2str(subnum) '_' name_id ';']);
+cd(dm);
+
 %% SUDS 1 rating
 
 cgfont('Arial',36);
@@ -401,9 +405,9 @@ cgpencol(0,0,0);
 
 %Which buttons have the function of increase, decrease, or finishing the
 %question
-r_inc = 3; %green button
-r_dec = 2; %yellow button
-r_sel = 1; %blue button
+r_inc = 2; %yellow button
+r_dec = 1; %blue button
+r_sel = 3; %green button
 but_resp=0;
 
 pause on;
@@ -432,7 +436,7 @@ for i = 1
     cgtext('Extremely',200, -115);
     cgflip;
     pause(.5); %The script waits half a second before allowing any inputs - ensures that early button presses aren't registered
-    FlushEvents
+    FlushEvents();
     while ok_trig == 0
         
         [keyIsDown,press_time,keyArr] = KbCheck(); %Check the button box for inputs
@@ -476,8 +480,8 @@ for i = 1
                     elseif button=='y'
                         but_resp=2;
                         keyReg = 1;
-                    elseif button=='r'
-                        but_resp=4;
+                    elseif button=='g'
+                        but_resp=3;
                         keyReg = 1;
                     else
                     end
@@ -556,7 +560,7 @@ for i = 1
         end
     end
 end
-distressed = 50 + (rating / 4);
+distressed_1 = 50 + (rating / 4);
 %%%%%%end of rating
 %% Saving data
 dmat = 'C:\My Experiments\Wen_Li\OCF\Data';
