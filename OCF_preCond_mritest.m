@@ -1,7 +1,7 @@
 %% preConditiong task of OCF (olfactory conditioning fMRI) study
-% Created by YY 
+% Created by YY
 % **** indicates places that need discussion
-% Last update: 8/24/14
+% Last update: 8/27/14
 
 clear all
 
@@ -43,7 +43,7 @@ stimordO = [5,1,3,8,4,2];
 
 % the final stimR has 15trials/condition that specifies odor ID for each
 % trial
-StimR = [stimordA'; stimordB'; stimordC'; stimordD';  stimordE'; stimordF'; stimordG'; stimordH'; stimordI'; stimordJ'; stimordK'; stimordL'; stimordM'; stimordN';]; 
+StimR = [stimordA'; stimordB'; stimordC'; stimordD';  stimordE'; stimordF'; stimordG'; stimordH'; stimordI'; stimordJ'; stimordK'; stimordL'; stimordM'; stimordN';];
 
 %% Configure options for fMRI
 whichplace = 3;
@@ -192,7 +192,7 @@ rt_list=[];
 %% Stimulus presentation loop- 15 trials/cond * 6 cond = 90 trials
 
 for i = 1:5%length(StimR)
-
+    
     trialtime = cogstd('sGetTime', -1) * 1000 ;
     if (i == 1)
         scanon_7th = trialtime;
@@ -201,14 +201,14 @@ for i = 1:5%length(StimR)
     end
     
     startTimes=[startTimes trialtime];%log the beginning of each trial
-        
+    
     odorid=StimR(i);
     odorindex = [odorindex odorid];
     
     %** need to figure out the Port and Odor ID assignment here - done;
     %testing required
-    switch odorid 
-        case (1) 
+    switch odorid
+        case (1)
             portid = 2; %on PortB
         case (2)
             portid = 7; %on PortB
@@ -222,7 +222,7 @@ for i = 1:5%length(StimR)
             portid = 16; %on PortA
     end
     
-    %Get ready cues **** need to discuss the reason for a word/count-down
+    %Get ready cues
     %selection vs. a plain cross
     readycue='GET READY !';
     cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])  % Clear back screen to white
@@ -230,81 +230,71 @@ for i = 1:5%length(StimR)
     cgtext(readycue,0,0);
     cgflip
     pause(2);  % Wait for two seconds
-%         
-%     readycue='+';
-%     cgrect(0, 0, ScrWid, ScrHgh, [0.6 0.6 0.6])  % Clear back screen to white
-%     cgpencol(0.3,0.3,0.3)  % Mid-grey fixation for 2 seconds
-%     cgfont('Arial',48)
-%     cgtext(readycue,0,0.15);
-%     cgflip
-%     pause(2);  % Wait for two seconds
-%     
-
+    
     cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])  % Clear back screen to white
     cgtext('3',0,0);
     pause(1);  % Countdown "3"!!! (t = -2250 ms)
     cgflip
     t1 = cogstd('sGetTime', -1) * 1000 ;
-
+    
     cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])  % Clear back screen to white
     cgtext('2',0,0);
     while ((cogstd('sGetTime', -1) * 1000) < (t1 + 742)) end
     cgflip
-
+    
     cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])  % Clear back screen to white
     cgtext('1',0,0);
-    while ((cogstd('sGetTime', -1) * 1000) < (t1 + 1492)) end  
+    while ((cogstd('sGetTime', -1) * 1000) < (t1 + 992)) end
     cgflip
     
+    while ((cogstd('sGetTime', -1) * 1000) < (t1 + 1292)) end
+    
     % *** TURN ODOR #1 ON ***
-    while ((cogstd('sGetTime', -1) * 1000) < (t1 + 2092)) end
     if portid > 8
-            usb2_line_on(portid-8,0); %Use PortA, Channel No.odorid
+        usb2_line_on(portid-8,0); %Use PortA, Channel No.odorid
     else
-            usb2_line_on(0,portid);
+        usb2_line_on(0,portid);
     end
     
-
     odor_on = cogstd('sGetTime', -1) * 1000 ;
     parallel_acquire; % send trigger to Physio
     
-    % *** SNIFF CUE #1 ON ***
+    % *** SNIFF CUE ON ***
     cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])  % Clear back screen to white
     cgtext('SNIFF NOW',0,0);
     cgflip
     
-    while ((cogstd('sGetTime', -1) * 1000) < (odor_on + 150)) end    
+    % Prepare for response logging
     
-% Prepare for response logging    
-
     button_pressed=false;
+    odorofftrue = 0;
     key=[];
     keyStrings = {'b','y','g','r'};
     
-    while ((cogstd('sGetTime', -1) * 1000) < (odor_on + 7000))
-        if ((cogstd('sGetTime', -1) * 1000) > (odor_on + 2000))
-
-            % *** ODOR AND SNIFF CUE OFF ***
-            % turn off the smell
-            usb2_line_on(0,0);
-
-            % log the odor off time
-            odoroff = (cogstd('sGetTime', -1) * 1000) ;
-            
-            cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])  % Clear back screen to white
-            cgflip
-
-        end
-%         cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])  % Clear back screen to white
-%         cgtext('L: Odor A',0,60);
-%         cgtext('M: No Odor',0,0);
-%         cgtext('R: Odor B',0,-60);
-%         cgflip
-
-%    ** Response Logging: done; need testing
+    
+    if ((cogstd('sGetTime', -1) * 1000) > (odor_on + 2000))
+               
+        % *** SNIFF CUE OFF ***
+        usb2_line_on(0,0);
+        
+        % log the odor off time
+        odoroff = (cogstd('sGetTime', -1) * 1000) ;
+        odorofftrue = 1;
+        
+        cgfont('Arial',60);
+        cgpencol(0,1,0); %green
+        cgtext('+',0,0);
+        cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])  % Clear back screen to white
+        cgflip
+    end
+    
+    
+    while ((cogstd('sGetTime', -1) * 1000) < (odoroff + 5242))
+        
+        %    ** Response Logging: done; need testing
         response_time = 0;
         
-        while isempty(key)    
+        while isempty(key) && (odorofftrue == 1)
             [key,rtptb] = GetKey(keyStrings,5,GetSecs,-1);
             t_in_cog = (cogstd('sGetTime', -1) * 1000);
         end
@@ -312,7 +302,7 @@ for i = 1:5%length(StimR)
         response_time = t_in_cog - odor_on;
         
         if ~isempty(key) && button_pressed == false
-
+            
             if iscell(key)
                 if key{1,1} == 'b' || key{1,1} == 'y' || key{1,1} == 'g' || key{1,1} == 'r'
                     key = key{1,1};
@@ -340,11 +330,11 @@ for i = 1:5%length(StimR)
             end
         end
         
-     end
+    end
     
     if (response_time ~= 0)
-                key_str = sprintf ('Key\t%d\tDOWN\tat\t%0.1f\n', but_resp, response_time) ;
-                log_string(key_str) ;
+        key_str = sprintf ('Key\t%d\tDOWN\tat\t%0.1f\n', but_resp, response_time) ;
+        log_string(key_str) ;
     end
     
     odoronTimes = [odoronTimes odor_on];
@@ -352,26 +342,26 @@ for i = 1:5%length(StimR)
     
     
     if button_pressed % ****if button press occurred
-    presses = presses + 1;
- 
-    rtypes = [rtypes; i odorid but_resp response_time]; %collate all responses in the rtypes matrix
-    
-    else    
-    but_resp = NaN;
-    noresp = noresp + 1;
-    noresp_trials = [noresp_trials i] ;  %#ok<AGROW>        
+        presses = presses + 1;
+        
+        rtypes = [rtypes; i odorid but_resp response_time]; %collate all responses in the rtypes matrix
+        
+    else
+        but_resp = NaN;
+        noresp = noresp + 1;
+        noresp_trials = [noresp_trials i] ;  %#ok<AGROW>
     end
     
     y=sprintf('Odor Cond %d sniffed at %d ms for %d ms duration',...
-    odorid,odor_on,odoroff-odor_on);
+        odorid,odor_on,odoroff-odor_on);
     log_string(y);
-   % log_string(buttstr);
+    % log_string(buttstr);
     log_string(num2str(but_resp));
     log_string('');
-
+    
     while ((cogstd('sGetTime', -1) * 1000) < (trialtime + SOA))
-
-    end    
+        
+    end
     
 end
 
@@ -390,7 +380,7 @@ cgpencol(0,0,0) ;
 cgflip ;
 
 startwait = cogstd('sGetTime', -1) * 1000 ;
-while ((cogstd('sGetTime', -1) * 1000) < (startwait + 3000)) 
+while ((cogstd('sGetTime', -1) * 1000) < (startwait + 3000))
 end %blank screen for 3 sec
 
 dmat = 'C:\My Experiments\Wen_Li\OCF\Data';
@@ -465,28 +455,28 @@ for i = 1
         %not ensure this since it is the dependency of the previous loop as
         %well).
         if keyExists == 1 && keyReg==0
-           % if ~iscell(key) && key == 't' %Filters out TTL values when they are the only things there
-           %     key=[];
+            % if ~iscell(key) && key == 't' %Filters out TTL values when they are the only things there
+            %     key=[];
             %    keyExists = 0;
-           % else
-               % resp_length=length(key); %If there are two simultaneous inputs, key will be a cell; this must be filtered.
-%                 for i=1:(resp_length+1)
-%                     keycell={'l'};
-%                     keycell(1,i+1)={key};
-                    button=key;
-                    if button=='b'
-                        but_resp=1;
-                        keyReg = 1; %The reason this is here is so it only reads the first correct button press.  Just in case there are two button presses that correspond to functional keys, rather than 't'.
-                    elseif button=='y'
-                        but_resp=2;
-                        keyReg = 1;
-                    elseif button=='g'
-                        but_resp=3;
-                        keyReg = 1;
-                    else
-                    end
-              %  end
-           % end
+            % else
+            % resp_length=length(key); %If there are two simultaneous inputs, key will be a cell; this must be filtered.
+            %                 for i=1:(resp_length+1)
+            %                     keycell={'l'};
+            %                     keycell(1,i+1)={key};
+            button=key;
+            if button=='b'
+                but_resp=1;
+                keyReg = 1; %The reason this is here is so it only reads the first correct button press.  Just in case there are two button presses that correspond to functional keys, rather than 't'.
+            elseif button=='y'
+                but_resp=2;
+                keyReg = 1;
+            elseif button=='g'
+                but_resp=3;
+                keyReg = 1;
+            else
+            end
+            %  end
+            % end
         end
         
         %This loop only runs if one of the buttons above has been pressed.
