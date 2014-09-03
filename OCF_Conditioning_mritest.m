@@ -131,6 +131,10 @@ gpd = cggetdata('gpd') ;
 ScrWid = gsd.ScreenWidth ;
 ScrHgh = gsd.ScreenHeight ;
 
+%Other images
+cgloadbmp(2,'OCF_instruction.bmp');
+cgloadbmp(3, 'rectangle.bmp');
+
 %disgust pics
 cgloadbmp(8,'9301_300.bmp');%F
 cgloadbmp(9,'9321_300.bmp');%M
@@ -161,16 +165,24 @@ cgpencol(1, 0, 0); % red
 strSniff = '"SNIFF NOW"' ;
 cgtext(strSniff,0,1.8 * ScrHgh / 6 - 15);
 cgpencol(0,0,0); %black
-cgtext('Press the BLUE button if you think',0,1.2*ScrHgh / 6 - 15);
+cgtext('Press the GREEN button if you think',0,1.2*ScrHgh / 6 - 15);
 cgtext('it smells like odor A',0,0.6*ScrHgh/6 - 15);
 cgtext('Press the YELLOW button if you think',0,0*ScrHgh/6 - 15);
 cgtext('it smells like odor B',0,-0.6*ScrHgh/6 - 15);
-cgtext('Press the GREEN button if you think',0,-1.2*ScrHgh/6 - 15);
-cgtext('there is NO smell',0,-1.8 * ScrHgh/6 - 15);
+cgtext('Make NO response during black frames',0,-1.2*ScrHgh/6 - 15);
+
 cgflip
 
 pause on
-pause(12);
+pause(7);
+
+cgloadbmp(2,'OCF_instruction.bmp');
+
+cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])  % Clear back screen to white
+cgdrawsprite(2,0,0);
+cgflip
+pause on
+pause(5);
 
 % present crosshair
 cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])
@@ -266,201 +278,212 @@ for i = 1:5%length(StimR)
             portid = 16; %on PortA
     end
     
-    %Get ready cues **** need to discuss the reason for a word/count-down
-    %selection vs. a plain cross
-    readycue='GET READY !';
-    cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])  % Clear back screen to white
-    cgpencol(0,0,0)  % Black
-    cgtext(readycue,0,0);
-    cgflip
-    pause(2);  % Wait for two seconds
-    %
-    %     readycue='+';
-    %     cgrect(0, 0, ScrWid, ScrHgh, [0.6 0.6 0.6])  % Clear back screen to white
-    %     cgpencol(0.3,0.3,0.3)  % Mid-grey fixation for 2 seconds
-    %     cgfont('Arial',48)
-    %     cgtext(readycue,0,0.15);
-    %     cgflip
-    %     pause(2);  % Wait for two seconds
-    %
-    
-    cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])  % Clear back screen to white
-    cgtext('3',0,0);
-    pause(1);  % Countdown "3"!!! (t = -2250 ms)
-    cgflip
-    t1 = cogstd('sGetTime', -1) * 1000 ;
-    
-    cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])  % Clear back screen to white
-    cgtext('2',0,0);
-    while ((cogstd('sGetTime', -1) * 1000) < (t1 + 742)) end
-    cgflip
-    
-    cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])  % Clear back screen to white
-    cgtext('1',0,0);
-    while ((cogstd('sGetTime', -1) * 1000) < (t1 + 992)) end
-    cgflip
-    
-    while ((cogstd('sGetTime', -1) * 1000) < (t1 + 1292)) end
-    
-    % *** TURN ODOR #1 ON ***
-    if portid > 8
-        usb2_line_on(portid-8,0); %Use PortA, Channel No.odorid
-    else
-        usb2_line_on(0,portid);
-    end
-    
-    odor_on = cogstd('sGetTime', -1) * 1000 ;
-    parallel_acquire; % send trigger to Physio
-    
-    % *** SNIFF CUE #1 ON ***
-    cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])  % Clear back screen to white
-    cgtext('SNIFF NOW',0,0);
-    cgflip
-    
-    % Prepare for response logging
-    
-    button_pressed=false;
-    odorofftrue = 0;
-    key=[];
-    keyStrings = {'b','y','g','r'};
-    
-    while ((cogstd('sGetTime', -1) * 1000) < (odor_on + 2500))
+    if odorid ~=8
+        %Get ready cues **** need to discuss the reason for a word/count-down
+        %selection vs. a plain cross
+        readycue='GET READY !';
+        cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])  % Clear back screen to white
+        cgpencol(0,0,0)  % Black
+        cgtext(readycue,0,0);
+        cgflip
+        pause(3);  % Wait for two seconds
+        %
+        cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])  % Clear back screen to white
+        cgtext('3',0,0);
+        cgflip
+        t1 = cogstd('sGetTime', -1) * 1000 ;
+        while ((cogstd('sGetTime', -1) * 1000) < (t1 + 992)) end
         
-        if (voiceid ~= 99)&& ((cogstd('sGetTime', -1) * 1000) > (odor_on + 1000)) && ((cogstd('sGetTime', -1) * 1000) < (odor_on + 1400))
-            cgsound('open');
+        cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])  % Clear back screen to white
+        cgtext('2',0,0);
+        cgflip
+        t2 = cogstd('sGetTime', -1) * 1000 ;
+        while ((cogstd('sGetTime', -1) * 1000) < (t2 + 992)) end
+        
+        
+        cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])  % Clear back screen to white
+        cgtext('1',0,0);
+        cgflip
+        t3 = cogstd('sGetTime', -1) * 1000 ;
+        while ((cogstd('sGetTime', -1) * 1000) < (t3 + 992)) end
+        
+        
+        % *** TURN ODOR #1 ON ***
+        if portid > 8
+            usb2_line_on(portid-8,0); %Use PortA, Channel No.odorid
+        else
+            usb2_line_on(0,portid);
+        end
+        
+        odor_on = cogstd('sGetTime', -1) * 1000 ;
+        parallel_acquire; % send trigger to Physio
+        
+        % *** SNIFF CUE #1 ON ***
+        cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])  % Clear back screen to white
+        cgtext('SNIFF NOW',0,0);
+        cgflip
+        
+        % Prepare for response logging
+        
+        button_pressed=false;
+        odorofftrue = 0;
+        key=[];
+        keyStrings = {'b','y','g','r'};
+        
+        while ((cogstd('sGetTime', -1) * 1000) < (odor_on + 2500))
             
-            %Disgust sounds
-            cgsound('WavFilSND', 8, 'D6.wav');%F
-            cgsound('WavFilSND', 9, 'D7M_s.wav');%M
-            cgsound('WavFilSND', 10, 'D8M_s.wav');%M
-            cgsound('WavFilSND', 11, 'D9F_s.wav');%F
-            cgsound('WavFilSND', 12, 'D10M_s.wav');%M
-            cgsound('WavFilSND', 13, 'D11F_s.wav');%F
-            cgsound('WavFilSND', 14, 'D12M.wav');%M
-            %Neutral sounds
-            cgsound('WavFilSND', 15, 'N1.wav');%tone - neutral
-            cgsound('WavFilSND', 16, 'N2.wav');%tone - neutral
-            cgsound('WavFilSND', 17, 'N3.wav');%tone - neutral
-            cgsound('WavFilSND', 18, 'N4.wav');%tone - neutral
-            cgsound('WavFilSND', 19, 'N2.wav');%tone - neutral
-            cgsound('WavFilSND', 20, 'N3.wav');%tone - neutral
-            cgsound('WavFilSND', 21, 'N4.wav');%tone - neutral
-            
-            
-            %followed by the presentation of UCS
-            cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])  % Clear back screen to black
-            cgdrawsprite(picid,0,0);
-            cgflip(0,0,0)
-            picon = cogstd('sGetTime', -1) * 1000 ; %Log pic onset time
-            parallel_acquire;
-            
-            while ((cogstd('sGetTime', -1) * 1000) < (picon + 1497))%play sound for 1.5s along with picture
-                cgsound('play', voiceid)
+            if (voiceid ~= 99)&& ((cogstd('sGetTime', -1) * 1000) > (odor_on + 1000)) && ((cogstd('sGetTime', -1) * 1000) < (odor_on + 1400))
+                cgsound('open');
+                
+                %Disgust sounds
+                cgsound('WavFilSND', 8, 'D6.wav');%F
+                cgsound('WavFilSND', 9, 'D7M_s.wav');%M
+                cgsound('WavFilSND', 10, 'D8M_s.wav');%M
+                cgsound('WavFilSND', 11, 'D9F_s.wav');%F
+                cgsound('WavFilSND', 12, 'D10M_s.wav');%M
+                cgsound('WavFilSND', 13, 'D11F_s.wav');%F
+                cgsound('WavFilSND', 14, 'D12M.wav');%M
+                %Neutral sounds
+                cgsound('WavFilSND', 15, 'N1.wav');%tone - neutral
+                cgsound('WavFilSND', 16, 'N2.wav');%tone - neutral
+                cgsound('WavFilSND', 17, 'N3.wav');%tone - neutral
+                cgsound('WavFilSND', 18, 'N4.wav');%tone - neutral
+                cgsound('WavFilSND', 19, 'N2.wav');%tone - neutral
+                cgsound('WavFilSND', 20, 'N3.wav');%tone - neutral
+                cgsound('WavFilSND', 21, 'N4.wav');%tone - neutral
+                
+                
+                %followed by the presentation of UCS
+                cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])  % Clear back screen to black
+                cgdrawsprite(picid,0,0);
+                cgflip(0,0,0)
+                picon = cogstd('sGetTime', -1) * 1000 ; %Log pic onset time
                 parallel_acquire;
+                
+                while ((cogstd('sGetTime', -1) * 1000) < (picon + 1497))%play sound for 1.5s along with picture
+                    cgsound('play', voiceid)
+                    parallel_acquire;
+                end
+                
+                cgsound('shut');
+                % Draw the green cross to signal response window
+                cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])  % Clear back screen to white
+                cgfont('Arial',60);
+                cgpencol(0,1,0); %green
+                cgtext('+',0,0);
+                cgflip
+                
+            elseif (voiceid == 99)&& ((cogstd('sGetTime', -1) * 1000) > (odor_on + 2000))
+                % Draw the green cross to signal response window
+                cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])  % Clear back screen to white
+                cgfont('Arial',60);
+                cgpencol(0,1,0); %green
+                cgtext('+',0,0);
+                cgflip
             end
             
-            cgsound('shut');
-            % Draw the green cross to signal response window
-            cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])  % Clear back screen to white
-            cgfont('Arial',60);
-            cgpencol(0,1,0); %green
-            cgtext('+',0,0);
-            cgflip
-            
-        elseif (voiceid == 99)&& ((cogstd('sGetTime', -1) * 1000) > (odor_on + 2000))
-            % Draw the green cross to signal response window
-            cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])  % Clear back screen to white
-            cgfont('Arial',60);
-            cgpencol(0,1,0); %green
-            cgtext('+',0,0);
-            cgflip
+            if ((cogstd('sGetTime', -1) * 1000) > (odor_on + 2000))
+                
+                % *** ODOR AND SNIFF CUE OFF ***
+                % turn off the smell
+                usb2_line_on(0,0);
+                
+                % log the odor off time
+                odoroff = (cogstd('sGetTime', -1) * 1000) ;
+                odorofftrue = 1;
+            end
         end
-        
-        if ((cogstd('sGetTime', -1) * 1000) > (odor_on + 2000))
+        %     ** Response Logging: done; need testing
+        while ((cogstd('sGetTime', -1) * 1000) < (odoroff + 5242))
+            response_time = 0;
             
-            % *** ODOR AND SNIFF CUE OFF ***
-            % turn off the smell
-            usb2_line_on(0,0);
+            while isempty(key)  && odorofftrue == 1
+                [key,rtptb] = GetKey(keyStrings,5,GetSecs,-1);
+                t_in_cog = (cogstd('sGetTime', -1) * 1000);
+            end
             
-            % log the odor off time
-            odoroff = (cogstd('sGetTime', -1) * 1000) ;
-            odorofftrue = 1;
-        end
-    end
-    %     ** Response Logging: done; need testing
-    while ((cogstd('sGetTime', -1) * 1000) < (odor_on + 5250))
-        response_time = 0;
-        
-        while isempty(key)  && odorofftrue == 1
-            [key,rtptb] = GetKey(keyStrings,5,GetSecs,-1);
-            t_in_cog = (cogstd('sGetTime', -1) * 1000);
-        end
-        
-        response_time = t_in_cog - odor_on;
-        
-        if ~isempty(key) && button_pressed == false
+            response_time = t_in_cog - odor_on;
             
-            if iscell(key)
-                if key{1,1} == 'b' || key{1,1} == 'y' || key{1,1} == 'g' || key{1,1} == 'r'
-                    key = key{1,1};
+            if ~isempty(key) && button_pressed == false
+                
+                if iscell(key)
+                    if key{1,1} == 'b' || key{1,1} == 'y' || key{1,1} == 'g' || key{1,1} == 'r'
+                        key = key{1,1};
+                    else
+                        key = key{1,2};
+                    end
+                end
+                
+                
+                if  key=='g' % Odor A
+                    but_resp=7;
+                    allresp = [allresp; but_resp response_time];
+                    button_pressed = true;
+                elseif key=='y' % Odor B
+                    but_resp=9;
+                    allresp = [allresp; but_resp response_time];
+                    button_pressed = true;
                 else
-                    key = key{1,2};
+                    but_resp=NaN;
+                    allresp = [allresp; but_resp response_time];
+                    button_pressed = true;
                 end
             end
             
-            if key=='b' % Odor A
-                but_resp=1;
-                allresp = [allresp; but_resp response_time];
-                button_pressed = true;
-            elseif key=='y' % Odor B
-                but_resp=2;
-                allresp = [allresp; but_resp response_time];
-                button_pressed = true;
-            elseif key=='g' % No odor
-                but_resp=3;
-                allresp = [allresp; but_resp response_time];
-                button_pressed = true;
-                
-            else
-                but_resp=NaN;
-                allresp = [allresp; but_resp response_time];
-                button_pressed = true;
-            end
+        end
+        
+        if (response_time ~= 0)
+            key_str = sprintf ('Key\t%d\tDOWN\tat\t%0.1f\n', but_resp, response_time) ;
+            log_string(key_str) ;
+        end
+        
+        odoronTimes = [odoronTimes odor_on];
+        odordurTimes = [odordurTimes odoroff-odor_on];
+        
+        
+        if button_pressed % ****if button press occurred
+            presses = presses + 1;
+            
+            rtypes = [rtypes; i odorid but_resp response_time]; %collate all responses in the rtypes matrix
+            
+        else
+            but_resp = NaN;
+            noresp = noresp + 1;
+            noresp_trials = [noresp_trials i] ;  %#ok<AGROW>
+        end
+        
+        y=sprintf('Odor Cond %d sniffed at %d ms for %d ms duration',...
+            odorid,odor_on,odoroff-odor_on);
+        log_string(y);
+        %log_string(buttstr);
+        log_string(num2str(but_resp));
+        log_string('');
+        
+        while ((cogstd('sGetTime', -1) * 1000) < (trialtime + SOA))
+            
+        end
+        
+    else %for no odor trials, present cross and rectangle
+        cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])
+        cgfont('Arial',60);
+        cgpencol(0,0,0); %black cross
+        cgtext('+',0,0);
+        cgflip
+        pause on
+        pause (3);
+        
+        cgloadbmp(3,'rectangle.bmp');
+        
+        cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])  % Clear back screen to white
+        cgdrawsprite(3,0,0);
+        cgflip
+        parallel_acquire;
+        
+        while ((cogstd('sGetTime', -1) * 1000) < (trialtime + 14100)) %6 TRs
+            
         end
         
     end
-    
-    if (response_time ~= 0)
-        key_str = sprintf ('Key\t%d\tDOWN\tat\t%0.1f\n', but_resp, response_time) ;
-        log_string(key_str) ;
-    end
-    
-    odoronTimes = [odoronTimes odor_on];
-    odordurTimes = [odordurTimes odoroff-odor_on];
-    
-    
-    if button_pressed % ****if button press occurred
-        presses = presses + 1;
-        
-        rtypes = [rtypes; i odorid but_resp response_time]; %collate all responses in the rtypes matrix
-        
-    else
-        but_resp = NaN;
-        noresp = noresp + 1;
-        noresp_trials = [noresp_trials i] ;  %#ok<AGROW>
-    end
-    
-    y=sprintf('Odor Cond %d sniffed at %d ms for %d ms duration',...
-        odorid,odor_on,odoroff-odor_on);
-    log_string(y);
-    %log_string(buttstr);
-    log_string(num2str(but_resp));
-    log_string('');
-    
-    while ((cogstd('sGetTime', -1) * 1000) < (trialtime + SOA))
-        
-    end
-    
 end
 
 results.onsets.starttime = startTimes;
