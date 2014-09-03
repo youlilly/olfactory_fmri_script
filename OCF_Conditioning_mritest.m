@@ -324,7 +324,7 @@ for i = 1:5%length(StimR)
     key=[];
     keyStrings = {'b','y','g','r'};
     
-    while ((cogstd('sGetTime', -1) * 1000) < (odor_on + 7242))
+    while ((cogstd('sGetTime', -1) * 1000) < (odor_on + 2500))
         
         if (voiceid ~= 99)&& ((cogstd('sGetTime', -1) * 1000) > (odor_on + 1000)) && ((cogstd('sGetTime', -1) * 1000) < (odor_on + 1400))
             cgsound('open');
@@ -365,7 +365,6 @@ for i = 1:5%length(StimR)
             cgfont('Arial',60);
             cgpencol(0,1,0); %green
             cgtext('+',0,0);
-            cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])  % Clear back screen to white
             cgflip
             
         elseif (voiceid == 99)&& ((cogstd('sGetTime', -1) * 1000) > (odor_on + 2000))
@@ -374,7 +373,6 @@ for i = 1:5%length(StimR)
             cgfont('Arial',60);
             cgpencol(0,1,0); %green
             cgtext('+',0,0);
-            cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])  % Clear back screen to white
             cgflip
         end
         
@@ -388,8 +386,9 @@ for i = 1:5%length(StimR)
             odoroff = (cogstd('sGetTime', -1) * 1000) ;
             odorofftrue = 1;
         end
-        
-        %     ** Response Logging: done; need testing
+    end
+    %     ** Response Logging: done; need testing
+    while ((cogstd('sGetTime', -1) * 1000) < (odor_on + 5250))
         response_time = 0;
         
         while isempty(key)  && odorofftrue == 1

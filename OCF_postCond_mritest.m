@@ -492,7 +492,6 @@ for i = 1:5%length(StimR)
             cgfont('Arial',60);
             cgpencol(0,1,0); %green
             cgtext('+',0,0);
-            cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])  % Clear back screen to white
             cgflip
             
             
@@ -502,7 +501,6 @@ for i = 1:5%length(StimR)
             cgfont('Arial',60);
             cgpencol(0,1,0); %green
             cgtext('+',0,0);
-            cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])  % Clear back screen to white
             cgflip
             
         end
