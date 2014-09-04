@@ -395,8 +395,14 @@ for i = 1:5%length(StimR)
         case (4)
             portid = 4; %on PortB
         case (5)
+<<<<<<< HEAD
             portid = 5; %on PortB
 
+=======
+            portid = 11; %on PortA
+            %         case (8)
+            %             portid = 16; %on PortA
+>>>>>>> FETCH_HEAD
     end
     
     if odorid ~=8
@@ -408,6 +414,7 @@ for i = 1:5%length(StimR)
         cgtext(readycue,0,0);
         cgflip
         pause(3);  % Wait for two seconds
+<<<<<<< HEAD
         
         cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])  % Clear back screen to white
         cgtext('3',0,0);
@@ -482,6 +489,82 @@ for i = 1:5%length(StimR)
             
             response_time = t_in_cog - odor_on;
             
+=======
+        
+        cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])  % Clear back screen to white
+        cgtext('3',0,0);
+        cgflip
+        t1 = cogstd('sGetTime', -1) * 1000 ;
+        while ((cogstd('sGetTime', -1) * 1000) < (t1 + 992)) end
+        
+        cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])  % Clear back screen to white
+        cgtext('2',0,0);
+        cgflip
+        t2 = cogstd('sGetTime', -1) * 1000 ;
+        while ((cogstd('sGetTime', -1) * 1000) < (t2 + 992)) end
+        
+        
+        cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])  % Clear back screen to white
+        cgtext('1',0,0);
+        cgflip
+        t3 = cogstd('sGetTime', -1) * 1000 ;
+        while ((cogstd('sGetTime', -1) * 1000) < (t3 + 992)) end
+        
+        
+        % *** TURN ODOR #1 ON ***
+        if portid > 8
+            usb2_line_on(portid-8,0); %Use PortA, Channel No.odorid
+        else
+            usb2_line_on(0,portid);
+        end
+        
+        odor_on = cogstd('sGetTime', -1) * 1000 ;
+        parallel_acquire; % send trigger to Physio
+        
+        % *** SNIFF CUE ON ***
+        cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])  % Clear back screen to white
+        cgtext('SNIFF NOW',0,0);
+        cgflip
+        
+        % Prepare for response logging
+        
+        button_pressed=false;
+        odorofftrue = 0;
+        key=[];
+        keyStrings = {'b','y','g','r'};
+        
+        
+        while ((cogstd('sGetTime', -1) * 1000) < (odor_on + 2000)) end
+        
+        % *** SNIFF CUE OFF ***
+        usb2_line_on(0,0);
+        
+        % log the odor off time
+        odoroff = (cogstd('sGetTime', -1) * 1000) ;
+        odorofftrue = 1;
+        
+        cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])
+        cgfont('Arial',60);
+        cgpencol(0,1,0); %green
+        cgtext('+',0,0);
+        % Clear back screen to white
+        cgflip
+        
+        
+        
+        while ((cogstd('sGetTime', -1) * 1000) < (odoroff + 5242))
+            
+            %    ** Response Logging: done; need testing
+            response_time = 0;
+            
+            while isempty(key) && (odorofftrue == 1)
+                [key,rtptb] = GetKey(keyStrings,5,GetSecs,-1);
+                t_in_cog = (cogstd('sGetTime', -1) * 1000);
+            end
+            
+            response_time = t_in_cog - odor_on;
+            
+>>>>>>> FETCH_HEAD
             if ~isempty(key) && button_pressed == false
                 
                 if iscell(key)
