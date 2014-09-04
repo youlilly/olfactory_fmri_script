@@ -273,14 +273,7 @@ for i = 1:5%length(StimR)
         case (4)
             portid = 4; %on PortB
         case (5)
-<<<<<<< HEAD
             portid = 5; %on PortB
-
-=======
-            portid = 11; %on PortA
-        case (8)
-            portid = 16; %on PortA
->>>>>>> FETCH_HEAD
     end
     
     if odorid ~=8
@@ -314,19 +307,13 @@ for i = 1:5%length(StimR)
         
         
         % *** TURN ODOR #1 ON ***
-<<<<<<< HEAD
+
 %         if portid > 8
 %             usb2_line_on(portid-8,0); %Use PortA, Channel No.odorid
 %         else
             usb2_line_on(0,portid);
       %  end
-=======
-        if portid > 8
-            usb2_line_on(portid-8,0); %Use PortA, Channel No.odorid
-        else
-            usb2_line_on(0,portid);
-        end
->>>>>>> FETCH_HEAD
+
         
         odor_on = cogstd('sGetTime', -1) * 1000 ;
         parallel_acquire; % send trigger to Physio
@@ -386,11 +373,9 @@ for i = 1:5%length(StimR)
                 cgtext('+',0,0);
                 cgflip
                 
-<<<<<<< HEAD
+
             elseif (voiceid == 99)&& ((cogstd('sGetTime', -1) * 1000) > (odor_on + 1800))
-=======
-            elseif (voiceid == 99)&& ((cogstd('sGetTime', -1) * 1000) > (odor_on + 2000))
->>>>>>> FETCH_HEAD
+
                 % Draw the green cross to signal response window
                 cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])  % Clear back screen to white
                 cgfont('Arial',60);
@@ -399,11 +384,9 @@ for i = 1:5%length(StimR)
                 cgflip
             end
             
-<<<<<<< HEAD
+
             if ((cogstd('sGetTime', -1) * 1000) > (odor_on + 1800))
-=======
-            if ((cogstd('sGetTime', -1) * 1000) > (odor_on + 2000))
->>>>>>> FETCH_HEAD
+
                 
                 % *** ODOR AND SNIFF CUE OFF ***
                 % turn off the smell
@@ -460,13 +443,7 @@ for i = 1:5%length(StimR)
         
         odoronTimes = [odoronTimes odor_on];
         odordurTimes = [odordurTimes odoroff-odor_on];
-<<<<<<< HEAD
-        
-        
-=======
-        
-        
->>>>>>> FETCH_HEAD
+
         if button_pressed % ****if button press occurred
             presses = presses + 1;
             
@@ -484,8 +461,7 @@ for i = 1:5%length(StimR)
         %log_string(buttstr);
         log_string(num2str(but_resp));
         log_string('');
-<<<<<<< HEAD
-        
+
         while ((cogstd('sGetTime', -1) * 1000) < (trialtime + SOA))
             
         end
@@ -499,22 +475,7 @@ for i = 1:5%length(StimR)
         pause on
         pause (3);
         
-=======
-        
-        while ((cogstd('sGetTime', -1) * 1000) < (trialtime + SOA))
-            
-        end
-        
-    else %for no odor trials, present cross and rectangle
-        cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])
-        cgfont('Arial',60);
-        cgpencol(0,0,0); %black cross
-        cgtext('+',0,0);
-        cgflip
-        pause on
-        pause (3);
-        
->>>>>>> FETCH_HEAD
+
         cgloadbmp(3,'rectangle.bmp');
         
         cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])  % Clear back screen to white
