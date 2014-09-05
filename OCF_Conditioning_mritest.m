@@ -261,8 +261,11 @@ for i = 1:5%length(StimR)
         case (4)
             portid = 14; %on PortA
         case (5)
-<<<<<<< HEAD
             portid = 5; %on PortB
+<<<<<<< HEAD
+=======
+
+>>>>>>> parent of b71d1e8... Merge branch 'master' of github.com:youlilly/olfactory_fmri_script
     end
     
     if odorid ~=8
@@ -296,13 +299,19 @@ for i = 1:5%length(StimR)
         
         
         % *** TURN ODOR #1 ON ***
+<<<<<<< HEAD
 
+=======
+>>>>>>> parent of b71d1e8... Merge branch 'master' of github.com:youlilly/olfactory_fmri_script
 %         if portid > 8
 %             usb2_line_on(portid-8,0); %Use PortA, Channel No.odorid
 %         else
             usb2_line_on(0,portid);
       %  end
+<<<<<<< HEAD
 
+=======
+>>>>>>> parent of b71d1e8... Merge branch 'master' of github.com:youlilly/olfactory_fmri_script
         
         odor_on = cogstd('sGetTime', -1) * 1000 ;
         parallel_acquire; % send trigger to Physio
@@ -362,9 +371,13 @@ for i = 1:5%length(StimR)
                 cgtext('+',0,0);
                 cgflip
                 
+<<<<<<< HEAD
 
             elseif (voiceid == 99)&& ((cogstd('sGetTime', -1) * 1000) > (odor_on + 1800))
 
+=======
+            elseif (voiceid == 99)&& ((cogstd('sGetTime', -1) * 1000) > (odor_on + 1800))
+>>>>>>> parent of b71d1e8... Merge branch 'master' of github.com:youlilly/olfactory_fmri_script
                 % Draw the green cross to signal response window
                 cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])  % Clear back screen to white
                 cgfont('Arial',60);
@@ -373,9 +386,13 @@ for i = 1:5%length(StimR)
                 cgflip
             end
             
+<<<<<<< HEAD
 
             if ((cogstd('sGetTime', -1) * 1000) > (odor_on + 1800))
 
+=======
+            if ((cogstd('sGetTime', -1) * 1000) > (odor_on + 1800))
+>>>>>>> parent of b71d1e8... Merge branch 'master' of github.com:youlilly/olfactory_fmri_script
                 
                 % *** ODOR AND SNIFF CUE OFF ***
                 % turn off the smell
@@ -514,7 +531,12 @@ for i = 1:5%length(StimR)
         
         odoronTimes = [odoronTimes odor_on];
         odordurTimes = [odordurTimes odoroff-odor_on];
+<<<<<<< HEAD
 
+=======
+        
+        
+>>>>>>> parent of b71d1e8... Merge branch 'master' of github.com:youlilly/olfactory_fmri_script
         if button_pressed % ****if button press occurred
             presses = presses + 1;
 =======
@@ -546,10 +568,13 @@ for i = 1:5%length(StimR)
         %log_string(buttstr);
         log_string(num2str(but_resp));
         log_string('');
+<<<<<<< HEAD
 
         while ((cogstd('sGetTime', -1) * 1000) < (trialtime + SOA))
 =======
         response_time = t_in_cog - odor_on;
+=======
+>>>>>>> parent of b71d1e8... Merge branch 'master' of github.com:youlilly/olfactory_fmri_script
         
         if ~isempty(key) && button_pressed == false
             
@@ -592,7 +617,10 @@ for i = 1:5%length(StimR)
         pause on
         pause (3);
         
+<<<<<<< HEAD
 
+=======
+>>>>>>> parent of b71d1e8... Merge branch 'master' of github.com:youlilly/olfactory_fmri_script
         cgloadbmp(3,'rectangle.bmp');
 =======
     end
