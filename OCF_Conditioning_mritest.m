@@ -244,7 +244,7 @@ rt_list=[];
 
 %% Stimulus presentation loop- 3 trials/cond * 3 cond = 21 trials
 
-for i = 1:5%length(StimR)
+for i = 1:length(StimR)
     
     odorid=StimR(i,1);
     voiceid = StimR(i,2);

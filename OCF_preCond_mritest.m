@@ -369,7 +369,7 @@ rt_list=[];
 
 %% Stimulus presentation loop- 15 trials/cond * 6 cond = 90 trials
 
-for i = 1:5%length(StimR)
+for i = 1:length(StimR)
     
     trialtime = cogstd('sGetTime', -1) * 1000 ;
     if (i == 1)
