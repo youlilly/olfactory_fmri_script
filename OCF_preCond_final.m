@@ -306,7 +306,7 @@ cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])  % Clear back screen to white
 cgdrawsprite(2,0,0);
 cgflip
 pause on
-pause(5);
+pause(3);
 
 % present crosshair
 cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])
