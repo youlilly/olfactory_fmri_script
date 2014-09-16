@@ -104,8 +104,7 @@ for n = 1:length(odorlist)
    % else
         usb2_line_on(0,portid);
    % end
-    parallel_acquire;
-    
+        parallel_acquire;
     odor_on = cogstd('sGetTime', -1) * 1000 ;
     
     % *** SNIFF CUE #1 ON ***
@@ -116,7 +115,7 @@ for n = 1:length(odorlist)
     
     % *** SNIFF CUE OFF ***
     usb2_line_on(0,0);
-    
+
     cgrect(0, 0, ScrWid, ScrHgh, [0.6 0.6 0.6])  % Clear back screen to white
     cgflip
     
@@ -282,7 +281,7 @@ risk_sorted = sortrows(odorrisk,1);
 
 dmat = 'C:\My Experiments\Wen_Li\OCF\Data';
 cd(dmat);
-eval(['save OCF_risk2_sub' num2str(subnum) '_' name_id ';']);
+eval(['save OCF_risk_sub' num2str(subnum) '_' name_id ';']);
 dm = 'C:\My Experiments\Wen_Li\OCF'; %make sure to create this folder in the scanner computer
 cd(dm);
 

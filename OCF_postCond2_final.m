@@ -25,7 +25,7 @@ switch rem(subnum,2)
 end
 
 %Specify the location of reinforcement trials
-csp_trials = [3,28,38,59,76];
+csp_trials = [3,14,38,59,76];%changed from 28 to 14 for csp since sub6
 picid = [13, 10, 9, 11, 14];
 voiceid = [13, 10, 9, 11, 14];
 
@@ -33,9 +33,9 @@ rand('state',100*subnum+3); %ensure true randomization for each run
 
 stimordA = [2,4,csp,3,1,8,5];
 stimordB = repmat([1,2,3,4,5],1,1); stimordB = stimordB(randperm(5)); %guarantees no more than 2 same odors in a role
-stimordC = [3,2,4,1,5];
+stimordC = [3,csp,2,4,1,5];
 stimordD = repmat([1,2,3,4,5],1,1); stimordD = stimordD(randperm(5));
-stimordE = [5,1,3,8,4,csp,2];
+stimordE = [5,1,3,8,4,2];
 
 stimordF = repmat([1,2,3,4,5],1,1); stimordF = stimordF(randperm(5));
 stimordG = [2,1,3,csp,8,5,4];
@@ -134,11 +134,11 @@ pause on
 % % 
 cgloadbmp(1,'OCF_rating.bmp');
 
-cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])  % Clear back screen to white
-cgdrawsprite(1,0,0);
+cgrect(0, 0, ScrWid, ScrHgh, [0.6 0.6 0.6])  % Clear back screen to white
+cgdrawsprite(1,0,-15);
 cgfont('Arial',36);
 cgpencol(0,0,0);
-cgtext('Rate your feelings using the button box',0, 2.4 * ScrHgh / 6 - 15);
+cgtext('Rate your feelings using the button box',0, 2.5 * ScrHgh / 6 - 15);
 cgflip(0,0,0)
 
 %Which buttons have the function of increase, decrease, or finishing the
@@ -164,7 +164,7 @@ for i = 1
     ok_trig = 0; %The key value for finishing the question
     
     %Draw the question, rating line, current position, and instructions
-    cgrect(0, 0, ScrWid, ScrHgh, [1 1 1]);
+    cgrect(0, 0, ScrWid, ScrHgh, [0.6 0.6 0.6]);
     cgtext('How distressed/anxious are you feeling now?',0, 100);
     cgdraw([-200],[-50],[200],[-50]);
     cgdraw([rating],[-40],[rating],[-60]);
@@ -239,7 +239,7 @@ for i = 1
                 if rating < -200
                     rating = -200;
                 end
-                cgrect(0, 0, ScrWid, ScrHgh, [1 1 1]);
+                cgrect(0, 0, ScrWid, ScrHgh, [0.6 0.6 0.6]);
                 cgtext('How distressed/anxious are you feeling now?',0, 100);
                 cgdraw([-200],[-50],[200],[-50]);
                 cgdraw([rating],[-40],[rating],[-60]);
@@ -265,7 +265,7 @@ for i = 1
                 if rating > 200
                     rating = 200;
                 end
-                cgrect(0, 0, ScrWid, ScrHgh, [1 1 1]);
+                cgrect(0, 0, ScrWid, ScrHgh, [0.6 0.6 0.6]);
                 cgtext('How distressed/anxious are you feeling now?',0, 100);
                 cgdraw([-200],[-50],[200],[-50]);
                 cgdraw([rating],[-40],[rating],[-60]);
@@ -304,7 +304,7 @@ distressed_postCond1 = 50 + (rating / 4);
 
 %% Present Instructions
 % Clear back page
-cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])
+cgrect(0, 0, ScrWid, ScrHgh, [0.6 0.6 0.6])
 cgfont('Arial',36)
 cgpencol(0,0,0)
 
@@ -326,20 +326,20 @@ pause on
 pause(7);
 
 
-cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])  % Clear back screen to white
+cgrect(0, 0, ScrWid, ScrHgh, [0.6 0.6 0.6])  % Clear back screen to white
 cgdrawsprite(2,0,0);
 cgflip
 pause on
-pause(5);
+pause(3);
 
 % present crosshair
-cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])
+cgrect(0, 0, ScrWid, ScrHgh, [0.6 0.6 0.6])
 cgfont('Arial',60);
 cgpencol(1,0,0); %red
 cgtext('+',0,0);
 cgflip
 
-cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])
+cgrect(0, 0, ScrWid, ScrHgh, [0.6 0.6 0.6])
 
 if whichplace == 1  % i.e., scanning study with scanner pulses
     %    clearserialbytes(PC);
@@ -359,7 +359,7 @@ end
 % that the parallel port received the trigger and is now getting baseline
 % information.  This crosshairs will stay up for 30? seconds, the
 % recommended length of baseline data gathering.
-cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])
+cgrect(0, 0, ScrWid, ScrHgh, [0.6 0.6 0.6])
 cgfont('Arial',60);
 cgpencol(1,1,0); %yellow
 cgtext('+',0,0);
@@ -430,26 +430,26 @@ for i = 1:length(StimR)
         
         %Get ready cues
         readycue='GET READY !';
-        cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])  % Clear back screen to white
+        cgrect(0, 0, ScrWid, ScrHgh, [0.6 0.6 0.6])  % Clear back screen to white
         cgpencol(0,0,0)  % Black
         cgtext(readycue,0,0);
         cgflip
         pause(3);  % Wait for two seconds
         
-        cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])  % Clear back screen to white
+        cgrect(0, 0, ScrWid, ScrHgh, [0.6 0.6 0.6])  % Clear back screen to white
         cgtext('3',0,0);
         cgflip
         t1 = cogstd('sGetTime', -1) * 1000 ;
         while ((cogstd('sGetTime', -1) * 1000) < (t1 + 992)) end
         
-        cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])  % Clear back screen to white
+        cgrect(0, 0, ScrWid, ScrHgh, [0.6 0.6 0.6])  % Clear back screen to white
         cgtext('2',0,0);
         cgflip
         t2 = cogstd('sGetTime', -1) * 1000 ;
         while ((cogstd('sGetTime', -1) * 1000) < (t2 + 992)) end
         
         
-        cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])  % Clear back screen to white
+        cgrect(0, 0, ScrWid, ScrHgh, [0.6 0.6 0.6])  % Clear back screen to white
         cgtext('1',0,0);
         cgflip
         t3 = cogstd('sGetTime', -1) * 1000 ;
@@ -467,7 +467,7 @@ for i = 1:length(StimR)
         parallel_acquire;
         
         % *** SNIFF CUE #1 ON ***
-        cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])  % Clear back screen to white
+        cgrect(0, 0, ScrWid, ScrHgh, [0.6 0.6 0.6])  % Clear back screen to white
         cgtext('SNIFF NOW',0,0);
         cgflip
         
@@ -495,7 +495,7 @@ for i = 1:length(StimR)
                 cgsound('WavFilSND', 14, 'D12M.wav');%M
                 
                 %followed by the presentation of UCS
-                cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])  % Clear back screen to black
+                cgrect(0, 0, ScrWid, ScrHgh, [0.6 0.6 0.6])  % Clear back screen to black
                 cgdrawsprite(picid(count),0,0);
                 cgflip(0,0,0)
                 picon = cogstd('sGetTime', -1) * 1000 ; %Log pic onset time
@@ -508,7 +508,7 @@ for i = 1:length(StimR)
                 
                 cgsound('shut');
                 % Draw the green cross to signal response window
-                cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])  % Clear back screen to white
+                cgrect(0, 0, ScrWid, ScrHgh, [0.6 0.6 0.6])  % Clear back screen to white
                 cgfont('Arial',60);
                 cgpencol(0,1,0); %green
                 cgtext('+',0,0);
@@ -517,7 +517,7 @@ for i = 1:length(StimR)
                 
             elseif ~ismember(i,csp_trials) && ((cogstd('sGetTime', -1) * 1000) > (odor_on + 1800))
                 % Draw the green cross to signal resposne window
-                cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])  % Clear back screen to white
+                cgrect(0, 0, ScrWid, ScrHgh, [0.6 0.6 0.6])  % Clear back screen to white
                 cgfont('Arial',60);
                 cgpencol(0,1,0); %green
                 cgtext('+',0,0);
@@ -608,7 +608,7 @@ for i = 1:length(StimR)
             
         end
     else %for no odor trials, present cross and rectangle
-        cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])
+        cgrect(0, 0, ScrWid, ScrHgh, [0.6 0.6 0.6])
         cgfont('Arial',60);
         cgpencol(0,0,0); %black cross
         cgtext('+',0,0);
@@ -617,7 +617,7 @@ for i = 1:length(StimR)
         
         cgloadbmp(3,'rectangle.bmp');
         
-        cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])  % Clear back screen to white
+        cgrect(0, 0, ScrWid, ScrHgh, [0.6 0.6 0.6])  % Clear back screen to white
         cgdrawsprite(3,0,0);
         cgflip
         parallel_acquire;
@@ -640,7 +640,7 @@ results.behav.presses = presses;
 
 % Clear back page
 
-cgrect(0, 0, ScrWid, ScrHgh, [1 1 1]) ;
+cgrect(0, 0, ScrWid, ScrHgh, [0.6 0.6 0.6]) ;
 cgpencol(0,0,0) ;
 cgflip ;
 
@@ -656,10 +656,10 @@ eval(['save OCF_postcond2_sub' num2str(subnum) '_' name_id ';']);
 cd(dm);
 
 % Clear back page
-cgrect(0, 0, ScrWid, ScrHgh, [1 1 1]) ;
+cgrect(0, 0, ScrWid, ScrHgh, [0.6 0.6 0.6]) ;
 cgflip ;
 
-cgrect(0, 0, ScrWid, ScrHgh, [1 1 1]) ;
+cgrect(0, 0, ScrWid, ScrHgh, [0.6 0.6 0.6]) ;
 cgpencol(0,0,0) ;
 cgtext('Well done ! Take a break',0,ScrHgh / 6 - 15);
 cgflip ;

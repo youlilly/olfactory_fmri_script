@@ -155,7 +155,7 @@ cgloadbmp(21,'7224_300.bmp');%
 
 %% Present Instructions
 % Clear back page
-cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])
+cgrect(0, 0, ScrWid, ScrHgh, [0.6 0.6 0.6])
 cgfont('Arial',36)
 cgpencol(0,0,0)
 
@@ -178,20 +178,20 @@ pause(7);
 
 cgloadbmp(2,'OCF_instruction.bmp');
 
-cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])  % Clear back screen to white
+cgrect(0, 0, ScrWid, ScrHgh, [0.6 0.6 0.6])  % Clear back screen to white
 cgdrawsprite(2,0,0);
 cgflip
 pause on
-pause(5);
+pause(3);
 
 % present crosshair
-cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])
+cgrect(0, 0, ScrWid, ScrHgh, [0.6 0.6 0.6])
 cgfont('Arial',60);
 cgpencol(1,0,0); %red
 cgtext('+',0,0);
 cgflip
 
-cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])
+cgrect(0, 0, ScrWid, ScrHgh, [0.6 0.6 0.6])
 
 if whichplace == 1  % i.e., scanning study with scanner pulses
     %    clearserialbytes(PC);
@@ -211,7 +211,7 @@ end
 % that the parallel port received the trigger and is now getting baseline
 % information.  This crosshairs will stay up for 30? seconds, the
 % recommended length of baseline data gathering.
-cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])
+cgrect(0, 0, ScrWid, ScrHgh, [0.6 0.6 0.6])
 cgfont('Arial',60);
 cgpencol(1,1,0); %yellow
 cgtext('+',0,0);
@@ -281,26 +281,26 @@ for i = 1:length(StimR)
         %Get ready cues **** need to discuss the reason for a word/count-down
         %selection vs. a plain cross
         readycue='GET READY !';
-        cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])  % Clear back screen to white
+        cgrect(0, 0, ScrWid, ScrHgh, [0.6 0.6 0.6])  % Clear back screen to white
         cgpencol(0,0,0)  % Black
         cgtext(readycue,0,0);
         cgflip
         pause(3);  % Wait for two seconds
         %
-        cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])  % Clear back screen to white
+        cgrect(0, 0, ScrWid, ScrHgh, [0.6 0.6 0.6])  % Clear back screen to white
         cgtext('3',0,0);
         cgflip
         t1 = cogstd('sGetTime', -1) * 1000 ;
         while ((cogstd('sGetTime', -1) * 1000) < (t1 + 992)) end
         
-        cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])  % Clear back screen to white
+        cgrect(0, 0, ScrWid, ScrHgh, [0.6 0.6 0.6])  % Clear back screen to white
         cgtext('2',0,0);
         cgflip
         t2 = cogstd('sGetTime', -1) * 1000 ;
         while ((cogstd('sGetTime', -1) * 1000) < (t2 + 992)) end
         
         
-        cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])  % Clear back screen to white
+        cgrect(0, 0, ScrWid, ScrHgh, [0.6 0.6 0.6])  % Clear back screen to white
         cgtext('1',0,0);
         cgflip
         t3 = cogstd('sGetTime', -1) * 1000 ;
@@ -318,7 +318,7 @@ for i = 1:length(StimR)
         parallel_acquire; % send trigger to Physio
         
         % *** SNIFF CUE #1 ON ***
-        cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])  % Clear back screen to white
+        cgrect(0, 0, ScrWid, ScrHgh, [0.6 0.6 0.6])  % Clear back screen to white
         cgtext('SNIFF NOW',0,0);
         cgflip
         
@@ -353,7 +353,7 @@ for i = 1:length(StimR)
                 
                 
                 %followed by the presentation of UCS
-                cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])  % Clear back screen to black
+                cgrect(0, 0, ScrWid, ScrHgh, [0.6 0.6 0.6])  % Clear back screen to black
                 cgdrawsprite(picid,0,0);
                 cgflip(0,0,0)
                 picon = cogstd('sGetTime', -1) * 1000 ; %Log pic onset time
@@ -366,7 +366,7 @@ for i = 1:length(StimR)
                 
                 cgsound('shut');
                 % Draw the green cross to signal response window
-                cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])  % Clear back screen to white
+                cgrect(0, 0, ScrWid, ScrHgh, [0.6 0.6 0.6])  % Clear back screen to white
                 cgfont('Arial',60);
                 cgpencol(0,1,0); %green
                 cgtext('+',0,0);
@@ -374,7 +374,7 @@ for i = 1:length(StimR)
                 
             elseif (voiceid == 99)&& ((cogstd('sGetTime', -1) * 1000) > (odor_on + 1800))
                 % Draw the green cross to signal response window
-                cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])  % Clear back screen to white
+                cgrect(0, 0, ScrWid, ScrHgh, [0.6 0.6 0.6])  % Clear back screen to white
                 cgfont('Arial',60);
                 cgpencol(0,1,0); %green
                 cgtext('+',0,0);
@@ -463,7 +463,7 @@ for i = 1:length(StimR)
         end
         
     else %for no odor trials, present cross and rectangle
-        cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])
+        cgrect(0, 0, ScrWid, ScrHgh, [0.6 0.6 0.6])
         cgfont('Arial',60);
         cgpencol(0,0,0); %black cross
         cgtext('+',0,0);
@@ -473,7 +473,7 @@ for i = 1:length(StimR)
         
         cgloadbmp(3,'rectangle.bmp');
         
-        cgrect(0, 0, ScrWid, ScrHgh, [1 1 1])  % Clear back screen to white
+        cgrect(0, 0, ScrWid, ScrHgh, [0.6 0.6 0.6])  % Clear back screen to white
         cgdrawsprite(3,0,0);
         cgflip
         parallel_acquire;
@@ -503,10 +503,10 @@ eval(['save OCF_cond_sub' num2str(subnum) '_' name_id ';']);
 cd(dm)
 
 % Clear back page
-cgrect(0, 0, ScrWid, ScrHgh, [1 1 1]) ;
+cgrect(0, 0, ScrWid, ScrHgh, [0.6 0.6 0.6]) ;
 cgflip ;
 
-cgrect(0, 0, ScrWid, ScrHgh, [1 1 1]) ;
+cgrect(0, 0, ScrWid, ScrHgh, [0.6 0.6 0.6]) ;
 cgpencol(0,0,0) ;
 
 cgtext('Well done ! Take a break',0,ScrHgh / 6 - 15);
