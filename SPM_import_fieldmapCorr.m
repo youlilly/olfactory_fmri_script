@@ -795,7 +795,7 @@ end
 
 mainpath = '/Volumes/Elements/OCF';
 
-subs = 10;
+subs = 1;
 
 shortTE = 7;
 longTE = 10;
@@ -807,7 +807,7 @@ for i = 1:length(subs)
 
         subfol = strcat('sub',num2str(subs(i)));
         fullfol = strcat(mainpath,'/',subfol);
-        for run = 2
+        for run = 1:3
             
             fmap = [];
             files = [];
@@ -816,8 +816,10 @@ for i = 1:length(subs)
             %will call for the masked fieldmap that was just made.
             if run == 1
                 FMDirectory        = strcat(fullfol,'/',fm1name);
-            else
+            elseif run == 2
                 FMDirectory        = strcat(fullfol,'/',fm2name);
+            else run == 3
+                FMDirectory        = strcat(fullfol,'/FM2_Postcond');
             end
             Filter            = 'fpm_maskedFM.img';
             
