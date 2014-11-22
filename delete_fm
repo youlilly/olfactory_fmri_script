@@ -1,0 +1,23 @@
+#!/bin/bash
+
+for i in {1..16}
+do
+cd /Volumes/Elements/OCF/sub${i}/Fieldmap1
+rm -rfv vdm5*.img
+rm -rfv vdm5*.hdr
+
+cd /Volumes/Elements/OCF/sub${i}/Fieldmap2
+rm -rfv vdm5*.img
+rm -rfv vdm5*.hdr
+
+cd /Volumes/Elements/OCF/sub${i}/Fieldmap3
+rm -rfv vdm5*.img
+rm -rfv vdm5*.hdr
+
+cd /Volumes/Elements/OCF/sub${i}/Fieldmap3
+rm -rfv vdm5*.img
+rm -rfv vdm5*.hdr
+
+done
+
+

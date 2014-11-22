@@ -1,0 +1,19 @@
+#!/bin/bash
+
+for i in {1..16}
+
+do
+
+cd /Volumes/Elements/OCF/sub${i}/
+mkdir FM2_Postcond FM4_Olocal
+
+cd /Volumes/Elements/OCF/sub${i}/Fieldmap2
+cp  fpm_maskedFM.* ../FM2_Postcond
+
+
+
+done
+
+
+
+
