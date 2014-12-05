@@ -1,0 +1,18 @@
+#!/bin/bash
+
+for i in {2..19}
+
+do
+
+cd /Volumes/RiverFlow/Sweat_fMRI/Sub${i}/
+mkdir EPI1_1stlevel EPI2_1stlevel
+
+
+
+
+
+done
+
+
+
+

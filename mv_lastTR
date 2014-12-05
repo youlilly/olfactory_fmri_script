@@ -1,0 +1,19 @@
+#!/bin/bash
+
+for i in {5..19}
+
+do
+
+cd /Volumes/RiverFlow/Sweat_fMRI/Sub${i}/
+mkdir Unused_EPI
+
+
+cd /Volumes/RiverFlow/Sweat_fMRI/Sub${i}/EPI1
+
+
+
+done
+
+
+
+
