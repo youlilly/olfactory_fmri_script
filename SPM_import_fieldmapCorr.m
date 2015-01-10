@@ -19,7 +19,7 @@
 %% Run this cell to set up initial parameters
 
 %mainpath = '/study/ocf/mri/preprocess/Prep';
-mainpath = '/Volumes/Elements 1/OCF';
+mainpath = '/Users/bhu/Documents/OCF_fmri/preprocess/Prep';
 epi1name = 'PreCond';
 epi2name = 'Cond';
 epi3name = 'PostCond';
@@ -152,7 +152,7 @@ end
 
 %% dicom import EPI images
 
-subs = 28;%:30;
+subs = 17:24;
 %mainpath = '/study/ocf/mri/preprocess/Prep';
 cd(mainpath);
 
@@ -161,7 +161,7 @@ for i = 1:length(subs)
     fullfol = strcat(mainpath,'/',subfol); % fullfol = '/study/ocf/mri/preprocess/Prep/sub6'
     cd(fullfol);
     
-    for runs = 7
+    for runs = 1:3
         sfiles = [];
         
         %If you want to strcat path from local computer, use the backward
@@ -169,37 +169,36 @@ for i = 1:length(subs)
         %dicomdir = strcat('C:\SweatStudy\PreprocessPipeline\00',num2str(subs(i)),'\unpacked\epi_run',num2str(runs));
         % If you want to stract path from server, use the forward slash
         if runs == 1
-            dicomdir = strcat('/study1/ocf/mri/preprocess/0',num2str(subs(i)),'/Precond');
+            dicomdir = strcat('/Users/bhu/Documents/OCF_fmri/preprocess/0',num2str(subs(i)),'/Precond');
             outdir = strcat(fullfol,'/',epi1name);
             Filter = 'precond';
         elseif runs == 2
-            dicomdir = strcat('/study1/ocf/mri/preprocess/0',num2str(subs(i)),'/Cond');
+            dicomdir = strcat('/Users/bhu/Documents/OCF_fmri/preprocess/0',num2str(subs(i)),'/Cond');
             outdir = strcat(fullfol,'/',epi2name);
             Filter = 'cond';
         elseif runs == 3
-            dicomdir = strcat('/study1/ocf/mri/preprocess/0',num2str(subs(i)),'/Postcond');
+            dicomdir = strcat('/Users/bhu/Documents/OCF_fmri/preprocess/0',num2str(subs(i)),'/Postcond');
             outdir = strcat(fullfol,'/',epi3name);
             Filter = 'postcond';
-        elseif runs == 4
-            dicomdir = strcat('/study1/ocf/mri/preprocess/0',num2str(subs(i)),'_2/Postcond2');
-            outdir = strcat(fullfol,'/',epi4name);
-            Filter = 'postcond';
-        elseif runs == 5
-            dicomdir = strcat('/study1/ocf/mri/preprocess/0',num2str(subs(i)),'_2/Olocalizer');
-            outdir = strcat(fullfol,'/',epi5name);
-            Filter = 'odor';
-        elseif runs == 6
-            dicomdir = strcat('/study1/ocf/mri/preprocess/0',num2str(subs(i)),'_2/Resting');
-            outdir = strcat(fullfol,'/',epi6name);
-            Filter = 'resting';
-        else
-            % dicomdir = strcat('/study1/ocf/mri/preprocess/0',num2str(subs(i)),'_2/Olocalizer2');
-            dicomdir = '/Volumes/Elements/Sub28_PostCond_2_unzipped/Postcond2';
-            outdir = strcat(fullfol,'/',epi7name);
-            Filter = 'postcond';        
+%         if runs == 4
+%             dicomdir = strcat('/Users/bhu/Documents/OCF_fmri/preprocess/0',num2str(subs(i)),'_2/Postcond2');
+%             outdir = strcat(fullfol,'/',epi4name);
+%             Filter = 'postcond';
+%         elseif runs == 5
+%             dicomdir = strcat('/Users/bhu/Documents/OCF_fmri/preprocess/0',num2str(subs(i)),'_2/Olocalizer');
+%             outdir = strcat(fullfol,'/',epi5name);
+%             Filter = 'odor';
+%         elseif runs == 6
+%             dicomdir = strcat('/Users/bhu/Documents/OCF_fmri/preprocess/0',num2str(subs(i)),'_2/Resting');
+%             outdir = strcat(fullfol,'/',epi6name);
+%             Filter = 'resting';
+%         else
+%             % dicomdir = strcat('/study1/ocf/mri/preprocess/0',num2str(subs(i)),'_2/Olocalizer2');
+%             dicomdir = '/Volumes/Elements/Sub28_PostCond_2_unzipped/Postcond2';
+%             outdir = strcat(fullfol,'/',epi7name);
+%             Filter = 'postcond';        
         end
-        
-        
+
         
         sfiles = spm_select('FPList',dicomdir,Filter);
        
@@ -226,7 +225,7 @@ end
 % according to the timing of collection.
 % 
 
-subs = 35:37;%:34;%[28:34]; %34];
+subs = 38% [35 36 38];%:34;%[28:34]; %34];
 % These values are preset according to our needs.  If there is variation in
 % any of these, do not use the batch script for that participant; instead,
 % use the individual script.
@@ -256,7 +255,7 @@ for i = 1:length(subs)
     fullfol = strcat(mainpath,'/',subfol); % fullfol = '/study/ocf/mri/preprocess/Prep/sub6'
     cd(fullfol);
     
-    for runs = 1:3
+    for runs = 4:6
         sfiles = [];
         
         %If you want to strcat path from local computer, use the backward
