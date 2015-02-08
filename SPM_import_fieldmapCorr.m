@@ -3,10 +3,12 @@
 % This script does preprocessing steps for OCF fMRI data, steps including:
 % DICOM IMPORTS 
 % Slice-Time Correction
+% Realignment
+% Fieldmap Correction
+
 
 % Before running this script, make sure all individual's epi/T1 data are unzipped
-% and saved in their corresponding folders under
-% /study/ocf/mri/preprocess/subN0(e.g. 001)
+% and saved in their corresponding folders 
 
 %% SETUP: Preparation for preprocessing
 % This part will take in some inputs so it can properly and consistently
@@ -168,6 +170,8 @@ for i = 1:length(subs)
         %slash, but check your computer first.
         %dicomdir = strcat('C:\SweatStudy\PreprocessPipeline\00',num2str(subs(i)),'\unpacked\epi_run',num2str(runs));
         % If you want to stract path from server, use the forward slash
+        %%More Comments: this pertains to whether you use mac/linux or
+        %windows. Use "\" for window paths
         if runs == 1
             dicomdir = strcat('/Users/bhu/Documents/OCF_fmri/preprocess/0',num2str(subs(i)),'/Precond');
             outdir = strcat(fullfol,'/',epi1name);
@@ -216,22 +220,24 @@ for i = 1:length(subs)
     end
 end
 
-%%
-%% STEP 2: Slice-Time Correction
+
+%% STEP 2: Slice-Time 
+% Generates "as*" files
 % This step performs slice-time correction, which resolves the signal
 % values according to the time they were collected.  Because each image is
 % really a vision of the brain over the course of time of one TR (in our
 % case, 2.35 seconds), this step makes sure that the signal is accurate
 % according to the timing of collection.
-% 
 
-subs = 38% [35 36 38];%:34;%[28:34]; %34];
+% Define sujects that need to do slice-time correction
+subs = [24];
+
 % These values are preset according to our needs.  If there is variation in
 % any of these, do not use the batch script for that participant; instead,
 % use the individual script.
 nslices = 48;
 TR = 2.35;
-TA = 2.301;
+TA = 2.301; %TA = TR-TR/nslices
 
 % The inputs for the slice-timing command don't use the straight TR and TA
 % but two particular timing variables based around them.  These
@@ -255,11 +261,11 @@ for i = 1:length(subs)
     fullfol = strcat(mainpath,'/',subfol); % fullfol = '/study/ocf/mri/preprocess/Prep/sub6'
     cd(fullfol);
     
-    for runs = 4:6
+    for runs = 1:6
         sfiles = [];
         
         %If you want to strcat path from local computer, use the backward
-        %slash, but check your computer first.
+        %slash (if it's a windows), but check your computer first.
         %dicomdir = strcat('C:\SweatStudy\PreprocessPipeline\00',num2str(subs(i)),'\unpacked\epi_run',num2str(runs));
         % If you want to stract path from server, use the forward slash
         if runs == 1
@@ -279,6 +285,7 @@ for i = 1:length(subs)
         end
         
     cd(impdir);
+    %the lines of codes below select "sRM*.img" files
     Filter = 'sRM';
     afiles = spm_select('FPList',impdir,Filter);
     afiles2 = [];
@@ -301,21 +308,25 @@ for i = 1:length(subs)
 end
 
 %% STEP 3: Realignment - Session1
+% Generates "ras*" files and realignmen parameters "rp*.txt"
 % This step aligns all the EPI files so that they don't vary in position
 % from one image to another.  This is vital for proper analysis and also
 % gives us the motion parameters for the model.
 
+subs = [24];
+
 % These flags are the inputs to the realign and reslice commands.  They
 % should not vary between subjects; if they do, use the individual script
 % for that subject.
-subs = 26:31%:34;%:6;
 
-estflag.quality = 0.9;
-estflag.sep = 4;
-estflag.fwhm = 5;
-estflag.rtm = 0;
+%estimate
+estflag.quality = 0.9; %quality (1 higest)
+estflag.sep = 4; %separation (mm)
+estflag.fwhm = 5; %Gaussian smoothing kernel (mm)
+estflag.rtm = 0; 
 estflag.interp = 4;
 
+%reslice
 resflag.which = [2 1];
 resflag.interp = 4;
 resflag.wrap = [0 0 0];
@@ -326,10 +337,10 @@ for i = 1:length(subs)
     subfol = strcat('sub',num2str(subs(i)));
     fullfol = strcat(mainpath,'/',subfol);
     
-% For realignment we want both sessions in the same run (not all files
-% together in one session but two sessions being run in the same call) so
+% For realignment we want all blocks in the same run (not all files
+% together in one blcok but three blocks being run in the same call) so
 % that they are realigned to each other.  The code is formatted here to
-% make sure both sessions are included.
+% make sure all three sessions are included.
 stdir = strcat(fullfol,'/',epi1name); %strcat('C:/SweatStudy/Pilot_fMRI/EPI_files/Realigned');
 Filter = 'as';
 rfiles1 = spm_select('FPList',stdir,Filter);
@@ -395,7 +406,7 @@ end
 % These flags are the inputs to the realign and reslice commands.  They
 % should not vary between subjects; if they do, use the individual script
 % for that subject.
-subs = 9%:6;
+subs = 24%:6;
 
 estflag.quality = 0.9;
 estflag.sep = 4;
@@ -475,7 +486,7 @@ spm_reslice(rfiles,resflag);
 end
 
 
-%% STEP 3b: Realignment - Session2 for sub1&2
+%% STEP 3b: Realignment - Session2 for sub1&2 only
 % This step aligns all the EPI files so that they don't vary in position
 % from one image to another.  This is vital for proper analysis and also
 % gives us the motion parameters for the model.
@@ -586,22 +597,9 @@ end
 % images are put in the censor list, including images surronding the
 % aberrant volumes.
 
-% for i = 1:length(subs)
-%     subfol = strcat('sub',num2str(subs(i)));
-%     fullfol = strcat(mainpath,subfol);
-% for run = 1:2
-%     % Import the mation parameters from the text file output by SPM after
-%     % realignment.
-%     if run == 1
-%         rpfile = strcat(fullfol,'\',epi1name,'\rp_asRMRRFSWT001-0004-00001-000336-01');
-%     else
-%         rpfile = strcat(fullfol,'\',epi2name,'\rp_asRMRRFSWT001-0008-00001-000336-01');
-%     end
-% rps = importdata(rpfile);
-% sub = [2 3 5:18];
-sub = 4;
-mainpath = '/Volumes/Elements/OCF';
-cd(mainpath);
+sub = [7 24];
+% mainpath = '/Volumes/Elements/OCF';
+% cd(mainpath);
 
 for i = 1:length(sub)
     subfol = strcat('sub',num2str(sub(i)));
@@ -628,10 +626,8 @@ for i = 1:length(sub)
         Filter = 'rp_asRMR';
         rpfile = spm_select('FPList',impdir,Filter);
         rps = importdata(rpfile);
-        %     rps = uiimport('-file');
-        %     rps = rps.rps;
-        %save ARF_sub
-        eval(['save OCF_sub' num2str(sub) '_epi' num2str(run) '_rp.txt rps']);
+
+        eval(['save OCF_sub' num2str(sub(i)) '_epi' num2str(run) '_rp.txt rps']);
         
         diffs = [];
         mocalc = [];
@@ -660,8 +656,8 @@ for i = 1:length(sub)
         end
         
         % Save the motion parameters and censor list for later use in the model.
-        eval(['save mps_sub' num2str(sub) '_epi' num2str(run) ' rps diffs mocalc']);
-        eval(['save censorlist_sub' num2str(sub) '_epi' num2str(run) ' clistn']);
+        eval(['save mps_sub' num2str(sub(i)) '_epi' num2str(run) ' rps diffs mocalc']);
+        eval(['save censorlist_sub' num2str(sub(i)) '_epi' num2str(run) ' clistn']);
         
         figure; 
         hold on; plot(rps(:,1),'k');
@@ -674,7 +670,7 @@ for i = 1:length(sub)
         
         title('Visual inspection');
         
-        eval(['saveas(gcf,''OCF_sub' num2str(sub) '_epi' num2str(run) '_rp.jpeg'');']); %Save graph to an Illustrator file
+        eval(['saveas(gcf,''OCF_sub' num2str(sub(i)) '_epi' num2str(run) '_rp.jpeg'');']); %Save graph to an Illustrator file
     end
     
 end
@@ -705,7 +701,7 @@ end
 % step.  The relevant dicoms should already be imported earlier.
 
 % Prepare the mask
-subs = 34;
+subs = 24;
 
 for i = 1:length(subs)
     subfol = strcat('sub',num2str(subs(i)));
@@ -945,7 +941,7 @@ end
 % step.  The relevant dicoms should already be imported earlier.
 
 % Prepare the mask
-subs = 33%[17:18 20 22:31];
+subs = 24%[17:18 20 22:31];
 
 for i = 1:length(subs)
     subfol = strcat('sub',num2str(subs(i)));
@@ -1041,9 +1037,9 @@ for i = 1:length(subs)
             %                     'C:/Program Files/MATLAB/Added_Toolboxes/spm8/spm8/tpm/grey.nii'   % change the directory to your own directory
             %                     'C:/Program Files/MATLAB/Added_Toolboxes/spm8/spm8/tpm/white.nii'  % Eg: mine is C:/Users/YAN/Desktop/Hope's ducuments/Hope files/Apps/Research Software/spm8/tpm/white.nii
             %                     'C:/Program Files/MATLAB/Added_Toolboxes/spm8/spm8/tpm/csf.nii'
-            '/Volumes/Elements/OCF/tpm/grey.nii'
-            '/Volumes/Elements/OCF/tpm/white.nii'
-            '/Volumes/Elements/OCF/tpm/csf.nii'
+            '/Users/bhu/Dropbox/spm8(5236)/tpm/grey.nii'
+            '/Users/bhu/Dropbox/spm8(5236)/tpm/white.nii'
+            '/Users/bhu/Dropbox/spm8(5236)/tpm/csf.nii'
             };
         opts.ngaus = [2
             2
@@ -1169,14 +1165,14 @@ for i = 1:length(subs)
     end
     
 end
-%% Fieldmap correction
+%% Fieldmap correction - 1st Session
 % need to add /apps/spm8-5236/noarch/spm8/toolbox/FieldMap  to path
 
 %path('/apps/spm8-5236/noarch/spm8/toolbox/FieldMap')
 
-mainpath = '/Volumes/Elements/OCF';
+%mainpath = '/Volumes/Elements/OCF';
 
-subs = 3:16;
+subs = 24;
 
 shortTE = 7;
 longTE = 10;
@@ -1199,7 +1195,7 @@ for i = 1:length(subs)
                 FMDirectory        = strcat(fullfol,'/',fm1name);
             elseif run == 2
                 FMDirectory        = strcat(fullfol,'/',fm2name);
-            else run == 3
+            elseif run == 3
                 FMDirectory        = strcat(fullfol,'/FM2_Postcond');
             end
             Filter            = 'fpm_maskedFM.img';
@@ -1230,6 +1226,369 @@ for i = 1:length(subs)
                 EPIDirectory          = strcat(fullfol,'/',epi2name);
             elseif run == 3
                 EPIDirectory          = strcat(fullfol,'/',epi3name);                
+            end
+            Filter            = 'ras*';
+            files             = spm_select('FPList',EPIDirectory,Filter);
+            
+            files2 = [];
+            mm = length(files(1,:));
+            
+            for crct = 1:size(files,1)
+                if strcmp(files(crct,mm-2:mm),'img') == 1
+                    files2 = [files2; files(crct,:)];
+                else
+                end
+            end
+            
+            files = files2;
+            
+            % DO NOT MAKE ANY FURTHER CHANGES PAST THIS POINT.  This is taken from
+            % the Fieldmap toolbox and does the actual correction; it should run
+            % automatically.  There are no visual cues from MATLAB that the
+            % correction is running, but you should be able to see the files as
+            % they are output by looking at the folder (they will be prefixed with
+            % a u and will be made one by one - it goes pretty quickly though).
+            
+            %=======================================================================
+            %
+            % Create and initialise parameters for FieldMap toolbox
+            %
+            %=======================================================================
+            
+            %
+            % Initialise parameters
+            %
+            ID = cell(4,1);
+            IP.P = cell(1,4);
+            IP.pP = [];
+            IP.fmagP = [];
+            IP.wfmagP = [];
+            IP.epiP = [];
+            IP.uepiP = [];
+            IP.nwarp = [];
+            IP.fm = [];
+            IP.vdm = [];
+            IP.et = cell(1,2);
+            IP.epifm = [];
+            IP.blipdir = [];
+            IP.ajm = [];
+            IP.tert = [];
+            IP.vdmP = []; %% Check that this should be there %%
+            IP.maskbrain = [];
+            IP.uflags = struct('iformat','','method','','fwhm',[],'bmask',[],'pad',[],'etd',[],'ws',[]);
+            IP.mflags = struct('template',[],'fwhm',[],'nerode',[],'ndilate',[],'thresh',[],'reg',[],'graphics',0);
+            
+            % Initially set brain mask to be empty
+            IP.uflags.bmask = [];
+            
+            % Set parameter values according to defaults
+            FieldMap('SetParams');
+            
+            
+            
+            %=======================================================================
+            %
+            % Sets parameters according to the defaults file that is being passed
+            %
+            %=======================================================================
+            
+            pm_defaults;        % "Default" default file
+            
+            
+            % Define parameters for fieldmap creation
+            IP.et{1} = shortTE;
+            IP.et{2} = longTE;
+            IP.maskbrain = pm_def.MASKBRAIN;
+            
+            % Set parameters for unwrapping
+            IP.uflags.iformat = pm_def.INPUT_DATA_FORMAT;
+            IP.uflags.method = pm_def.UNWRAPPING_METHOD;
+            IP.uflags.fwhm = pm_def.FWHM;
+            IP.uflags.pad = pm_def.PAD;
+            IP.uflags.ws = pm_def.WS;
+            IP.uflags.etd = longTE - shortTE;
+            
+            % Set parameters for brain masking
+            IP.mflags.template = pm_def.MFLAGS.TEMPLATE;
+            IP.mflags.fwhm = pm_def.MFLAGS.FWHM;
+            IP.mflags.nerode = pm_def.MFLAGS.NERODE;
+            IP.mflags.ndilate = pm_def.MFLAGS.NDILATE;
+            IP.mflags.thresh = pm_def.MFLAGS.THRESH;
+            IP.mflags.reg = pm_def.MFLAGS.REG;
+            IP.mflags.graphics = pm_def.MFLAGS.GRAPHICS;
+            
+            % Set parameters for unwarping
+            IP.ajm = pm_def.DO_JACOBIAN_MODULATION;
+            IP.blipdir = direction;
+            IP.tert = readtime;
+            IP.epifm = pm_def.EPI_BASED_FIELDMAPS;
+            
+            
+            %=======================================================================
+            %
+            % Load already prepared fieldmap (in Hz).
+            %
+            %=======================================================================
+            
+            %
+            % Select field map
+            %
+            % 24/03/04 - Chloe change below to spm_get(1,'fpm_*.img')...
+            % IP.pP = spm_vol(spm_get(1,'fpm_*.img','Select field map'));
+            % SPM5 Update
+            IP.pP = spm_vol(fmap);
+            
+            IP.fm.fpm = spm_read_vols(IP.pP);
+            IP.fm.jac = pm_diff(IP.fm.fpm,2);
+            if isfield(IP,'P') && ~isempty(IP.P{1})
+                IP.P = cell(1,4);
+            end
+            varargout{1} = IP.fm;
+            varargout{2} = IP.pP;
+            
+            
+            
+            
+            % %=======================================================================
+            % %
+            % % Scale a phase map so that max = pi and min =-pi radians.
+            % %
+            % %=======================================================================
+            %
+            %    F=varargin{2};
+            %    V=spm_vol(F);
+            %    vol=spm_read_vols(V);
+            %    mn=min(vol(:));
+            %    mx=max(vol(:));
+            %    vol=-pi+(vol-mn)*2*pi/(mx-mn);
+            %    V.dt(1)=4;
+            %    varargout{1} = FieldMap('Write',V,vol,'sc',V.dt(1),V.descrip);
+            
+            
+            
+            
+            
+            %=======================================================================
+            %
+            % Convert field map to voxel displacement map and
+            % do necessary inversions of displacement fields.
+            %
+            %=======================================================================
+            
+            %IP=varargin{2};
+            %
+            % If we already have memory mapped image pointer to voxel
+            % displacement map let's reuse it (so not to void possible
+            % realignment). If field-map is non-EPI based the previous
+            % realignment (based on different parameters) will be non-
+            % optimal and we should advice user to redo it.
+            %
+            % If no pointer already exist we'll make one.
+            %
+            if isfield(IP,'vdmP') && ~isempty(IP.vdmP)
+                msgbox({'Changing this parameter means that if previously',...
+                    'you matched VDM to EPI, this result may no longer',...
+                    'be optimal. In this case we recommend you redo the',...
+                    'Match VDM to EPI.'},...
+                    'Coregistration notice','warn','modal');
+            else
+                if ~isempty(IP.pP)
+                    IP.vdmP = struct('dim',    IP.pP.dim(1:3),...
+                        'dt',[4 spm_platform('bigend')],...
+                        'mat',    IP.pP.mat);
+                    IP.vdmP.fname=fullfile(spm_str_manip(IP.pP.fname, 'h'),['vdm5_' deblank(spm_str_manip(IP.pP.fname,'t'))]);
+                else
+                    IP.vdmP = struct('dim',    IP.P{1}.dim(1:3),...
+                        'dt',[4 spm_platform('bigend')],...
+                        'mat',    IP.P{1}.mat);
+                    IP.vdmP.fname=fullfile(spm_str_manip(IP.P{1}.fname, 'h'),['vdm5_' deblank(spm_str_manip(IP.P{1}.fname,'t'))]);
+                end
+            end
+            
+            % Scale field map and jacobian by total EPI readout time
+            IP.vdm.vdm = IP.blipdir*IP.tert*1e-3*IP.fm.fpm;
+            IP.vdm.jac = IP.blipdir*IP.tert*1e-3*IP.fm.jac;
+            
+            % Chloe added this: 26/02/05
+            % Put fieldmap parameters in descrip field of vdm
+            
+            vdm_info=sprintf('Voxel Displacement Map:echo time difference=%2.2fms, EPI readout time=%2.2fms',IP.uflags.etd, IP.tert);
+            if IP.epifm ==1
+                spm_progress_bar('Init',3,'Inverting displacement map','');
+                spm_progress_bar('Set',1);
+                % Invert voxel shift map and multiply by -1...
+                IP.vdm.ivdm = pm_invert_phasemap(-1*IP.vdm.vdm);
+                IP.vdm.ijac = pm_diff(IP.vdm.ivdm,2);
+                spm_progress_bar('Set',2);
+                spm_progress_bar('Clear');
+                FieldMap('Write',IP.vdmP,IP.vdm.ivdm,'',IP.vdmP.dt(1),vdm_info);
+            else
+                FieldMap('Write',IP.vdmP,IP.vdm.vdm,'',IP.vdmP.dt(1),vdm_info);
+            end
+            varargout{1} = IP.vdm;
+            varargout{2} = IP.vdmP;
+            
+            
+            %=======================================================================
+            %
+            % Load sample EPI image - NO gui
+            %
+            %=======================================================================
+            
+            ns = size(files,1);
+            %ns = 5; %test value
+            
+            for i = 1:ns
+                %
+                % Select EPI
+                %
+                %IP.epiP = spm_vol(spm_get(1,'*.img','Select sample EPI image'));
+                % SPM5 Update
+                IP.epiP = spm_vol(files(i,:));
+                %IP.epiP = spm_vol(spm_select(1,'image','Select sample EPI image'));
+                
+                %    varargout{1} = IP.epiP;
+                
+                %=======================================================================
+                %
+                % Create unwarped epi - NO gui
+                %
+                %=======================================================================
+                
+                %
+                % Update unwarped EPI
+                %
+                %       IP=varargin{2};
+                IP.uepiP = struct('fname',   'Image in memory',...
+                    'dim',     IP.epiP.dim,...
+                    'dt',[64 spm_platform('bigend')],...
+                    'pinfo',   IP.epiP.pinfo(1:2),...
+                    'mat',     IP.epiP.mat);
+                
+                % Need to sample EPI and voxel shift map in space of EPI...
+                [x,y,z] = ndgrid(1:IP.epiP.dim(1),1:IP.epiP.dim(2),1:IP.epiP.dim(3));
+                xyz = [x(:) y(:) z(:)];
+                
+                % Space of EPI is IP.epiP{1}.mat and space of
+                % voxel shift map is IP.vdmP{1}.mat
+                tM = inv(IP.epiP.mat\IP.vdmP.mat);
+                
+                x2 = tM(1,1)*x + tM(1,2)*y + tM(1,3)*z + tM(1,4);
+                y2 = tM(2,1)*x + tM(2,2)*y + tM(2,3)*z + tM(2,4);
+                z2 = tM(3,1)*x + tM(3,2)*y + tM(3,3)*z + tM(3,4);
+                xyz2 = [x2(:) y2(:) z2(:)];
+                
+                %
+                % Make mask since it is only meaningful to calculate undistorted
+                % image in areas where we have information about distortions.
+                %
+                msk = reshape(double(xyz2(:,1)>=1 & xyz2(:,1)<=IP.vdmP.dim(1) &...
+                    xyz2(:,2)>=1 & xyz2(:,2)<=IP.vdmP.dim(2) &...
+                    xyz2(:,3)>=1 & xyz2(:,3)<=IP.vdmP.dim(3)),IP.epiP.dim(1:3));
+                
+                % Read in voxel displacement map in correct space
+                tvdm = reshape(spm_sample_vol(spm_vol(IP.vdmP.fname),xyz2(:,1),...
+                    xyz2(:,2),xyz2(:,3),1),IP.epiP.dim(1:3));
+                
+                % Voxel shift map must be added to the y-coordinates.
+                uepi = reshape(spm_sample_vol(IP.epiP,xyz(:,1),...
+                    xyz(:,2)+tvdm(:),xyz(:,3),1),IP.epiP.dim(1:3));% TEMP CHANGE
+                
+                % Sample Jacobian in correct space and apply if required
+                if IP.ajm==1
+                    if IP.epifm==1 % If EPI, use inverted jacobian
+                        
+                        IP.jim = reshape(spm_sample_vol(IP.vdm.ijac,xyz2(:,1),...
+                            xyz2(:,2),xyz2(:,3),1),IP.epiP.dim(1:3));
+                    else
+                        IP.jim = reshape(spm_sample_vol(IP.vdm.jac,xyz2(:,1),...
+                            xyz2(:,2),xyz2(:,3),1),IP.epiP.dim(1:3));
+                    end
+                    uepi = uepi.*(1+IP.jim);
+                end
+                
+                IP.uepiP.dat=uepi.*msk;
+                varargout{1}=IP.uepiP;
+                
+                
+                %=======================================================================
+                %
+                % Write out unwarped EPI
+                %
+                %=======================================================================
+                
+                unwarp_info=sprintf('Unwarped EPI:echo time difference=%2.2fms, EPI readout time=%2.2fms, Jacobian=%d',IP.uflags.etd, IP.tert,IP.ajm);
+                IP.uepiP = FieldMap('Write',IP.epiP,IP.uepiP.dat,'u',IP.epiP.dt(1),unwarp_info);
+                
+            end
+            
+        end
+
+    
+end
+
+
+%% Fieldmap correction - 2nd session
+% need to add /apps/spm8-5236/noarch/spm8/toolbox/FieldMap  to path
+
+%path('/apps/spm8-5236/noarch/spm8/toolbox/FieldMap')
+
+%mainpath = '/Volumes/Elements/OCF';
+
+subs = 24;
+
+shortTE = 7;
+longTE = 10;
+
+readtime = 17.92;
+direction = -1;
+
+for i = 1:length(subs)
+
+        subfol = strcat('sub',num2str(subs(i)));
+        fullfol = strcat(mainpath,'/',subfol);
+        for run = 4:6
+            
+            fmap = [];
+            files = [];
+            
+            %For each subject, the fieldmaps will need to be loaded in.  Here you
+            %will call for the masked fieldmap that was just made.
+            if run == 4
+                FMDirectory        = strcat(fullfol,'/',fm3name);
+            elseif run == 5
+                FMDirectory        = strcat(fullfol,'/',fm4name);
+            elseif run == 6
+                FMDirectory        = strcat(fullfol,'/FM4_Resting');
+            end
+            Filter            = 'fpm_maskedFM.img';
+            
+            fmap           = spm_select('FPList',FMDirectory,Filter);
+            
+            fmap2 = [];
+            mm = length(fmap(1,:));
+            
+            for crct = 1:size(fmap,1)
+                if strcmp(fmap(crct,mm-2:mm),'img') == 1
+                    fmap2 = [fmap2; fmap(crct,:)];
+                else
+                end
+            end
+            
+            fmap = fmap2;
+            
+            
+            %For each subject, each EPI must be loaded in and written with the fieldmap
+            %correction.  The written files will be prefixed with a u.  Because of the
+            %way the files are currently formatted, the last number will increment by
+            %48, and the starting number will be 7 (or n + 6) because the first six
+            %scans were thrown out.
+            if run == 4
+                EPIDirectory          = strcat(fullfol,'/',epi4name);
+            elseif run == 5
+                EPIDirectory          = strcat(fullfol,'/',epi5name);
+            elseif run == 6
+                EPIDirectory          = strcat(fullfol,'/',epi6name);                
             end
             Filter            = 'ras*';
             files             = spm_select('FPList',EPIDirectory,Filter);
