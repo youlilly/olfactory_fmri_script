@@ -1,0 +1,13 @@
+for i in 9 11 12 15 
+
+do
+cd /Volumes/lilab/ocf/mri/New25/sub${i}/
+mkdir FM2_Postcond FM4_Resting
+
+cd /Volumes/lilab/ocf/mri/New25/sub${i}/Fieldmap2
+cp  fpm_maskedFM.* ../FM2_Postcond
+
+cd /Volumes/lilab/ocf/mri/New25/sub${i}/Fieldmap4
+cp  fpm_maskedFM.* ../FM4_Resting
+
+done

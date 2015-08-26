@@ -1,0 +1,23 @@
+for i in 5 6 7 8 9
+
+do
+echo "Unzipping files for Sub ${i} "
+cd /Volumes/lilab/ocf/raw-data/00${i}/Precond
+tar -xvzf /Volumes/lilab/ocf/raw-data/00${i}/dicoms/00004.precond/00004.precond.tgz
+
+cd /Volumes/lilab/ocf/raw-data/00${i}/Cond
+tar -xvzf /Volumes/lilab/ocf/raw-data/00${i}/dicoms/00009.cond/00009.cond.tgz
+
+cd /Volumes/lilab/ocf/raw-data/00${i}/Postcond
+tar -xvzf /Volumes/lilab/ocf/raw-data/00${i}/dicoms/00010.postcond/00010.postcond.tgz
+
+cd /Volumes/lilab/ocf/raw-data/00${i}_2/Postcond2
+tar -xvzf /Volumes/lilab/ocf/raw-data/00${i}_2/dicoms/00005.postcond/00005.postcond.tgz
+
+cd /Volumes/lilab/ocf/raw-data/00${i}_2/Olocalizer
+tar -xvzf /Volumes/lilab/ocf/raw-data/00${i}_2/dicoms/00008.odor_localizer/00008.odor_localizer.tgz
+
+cd /Volumes/lilab/ocf/raw-data/00${i}_2/Resting
+tar -xvzf /Volumes/lilab/ocf/raw-data/00${i}_2/dicoms/00007.resting_state/00007.resting_state.tgz
+
+done

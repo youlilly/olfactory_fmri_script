@@ -1,0 +1,24 @@
+for i in 35 37 38
+
+do
+
+cd /Volumes/lilab/ocf/mri/New25/sub${i}/PrecEPI1
+cp -vf uras*.* /Volumes/lilab/ocf/mri/New25/sub${i}/PrecEPI1/urasfiles
+
+cd /Volumes/lilab/ocf/mri/New25/sub${i}/CondEPI2
+cp -vf uras*.* /Volumes/lilab/ocf/mri/New25/sub${i}/CondEPI2/urasfiles
+
+cd /Volumes/lilab/ocf/mri/New25/sub${i}/PostEPI3
+cp -vf uras*.* /Volumes/lilab/ocf/mri/New25/sub${i}/PostEPI3/urasfiles
+
+cd /Volumes/lilab/ocf/mri/New25/sub${i}/P2EPI4
+cp -vf uras*.* /Volumes/lilab/ocf/mri/New25/sub${i}/P2EPI4/urasfiles
+
+cd /Volumes/lilab/ocf/mri/New25/sub${i}/OlEPI5
+cp -vf uras*.* /Volumes/lilab/ocf/mri/New25/sub${i}/OlEPI5/urasfiles
+
+cd /Volumes/lilab/ocf/mri/New25/sub${i}/ReEPI6
+cp -vf uras*.* /Volumes/lilab/ocf/mri/New25/sub${i}/ReEPI6/urasfiles
+
+done
+

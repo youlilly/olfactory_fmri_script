@@ -21,140 +21,149 @@
 %% Run this cell to set up initial parameters
 
 %mainpath = '/study/ocf/mri/preprocess/Prep';
-mainpath = '/Users/bhu/Documents/OCF_fmri/preprocess/Prep';
-epi1name = 'PreCond';
-epi2name = 'Cond';
-epi3name = 'PostCond';
-epi4name = 'PostCond2';
-epi5name = 'Olocalizer';
-epi6name = 'Resting';
-epi7name = 'PostCond2_p2';
-%epi7name = 'PostCond2_p2';
-% dum1name = 'Dummy1';
-% dum2name = 'Dummy2';
-% dum3name = 'Dummy3';
-% dum4name = 'Dummy4';
-% dum5name = 'Dummy5';
-% dum6name = 'Dummy6';
-%dum7name = 'Dummy7';
+% mainpath = '/Users/bhu/Documents/OCF_fmri/preprocess/Prep';
+% epi1name = 'PreCond';
+% epi2name = 'Cond';
+% epi3name = 'PostCond';
+% epi4name = 'PostCond2';
+% epi5name = 'Olocalizer';
+% epi6name = 'Resting';
+% epi7name = 'PostCond2_p2';
+% %epi7name = 'PostCond2_p2';
+% % dum1name = 'Dummy1';
+% % dum2name = 'Dummy2';
+% % dum3name = 'Dummy3';
+% % dum4name = 'Dummy4';
+% % dum5name = 'Dummy5';
+% % dum6name = 'Dummy6';
+% %dum7name = 'Dummy7';
 fm1name = 'Fieldmap1';
 fm2name = 'Fieldmap2';
 fm3name = 'Fieldmap3';
 fm4name = 'Fieldmap4';
-T1name = 'T1';
+% T1name = 'T1';
+
+mainpath = '/Volumes/lilab/ocf/mri/New25';
+epi1name = 'PrecEPI1';
+epi2name = 'CondEPI2';
+epi3name = 'PostEPI3';
+epi4name = 'P2EPI4';
+epi5name = 'OlEPI5';
+epi6name = 'ReEPI6';
+
 
 %save ARF_sub019_setup_directory_parameters_082514.mat
 %% change directory and making folders 
-subs = [31 32 33];
-
-cd(mainpath);
-
-for i = 1:length(subs)%1:5
-subfol = strcat('sub',num2str(subs(i))); % subfol = 'sub6'
-fullfol = strcat(mainpath,'/',subfol); % fullfol = '/study/sweat/mri/preprocess/Prep/sub6'
-if ~exist(subfol,'dir')
-    mkdir(strcat(mainpath,'/',subfol));
-else
-end
-cd(fullfol);
-mkdir(strcat(fullfol,'/',epi1name)); % folder: /study/ocf/mri/preprocess/Prep/sub6/PreCond
-mkdir(strcat(fullfol,'/',epi2name));
-mkdir(strcat(fullfol,'/',epi3name));
-mkdir(strcat(fullfol,'/',epi4name));
-mkdir(strcat(fullfol,'/',epi5name));
-mkdir(strcat(fullfol,'/',epi6name));
-% mkdir(strcat(fullfol,'/',dum1name));
-% mkdir(strcat(fullfol,'/',dum2name));
-% mkdir(strcat(fullfol,'/',dum3name));
-% mkdir(strcat(fullfol,'/',dum4name));
-% mkdir(strcat(fullfol,'/',dum5name));
-% mkdir(strcat(fullfol,'/',dum6name));
-mkdir(strcat(fullfol,'/',fm1name));
-mkdir(strcat(fullfol,'/',fm2name));
-mkdir(strcat(fullfol,'/',fm3name));
-mkdir(strcat(fullfol,'/',fm4name));
-mkdir(strcat(fullfol,'/',T1name));
-end
-
-%% dicom import T1 to each individual's folder 
-%make sure .json file is removed
-subs = [33];
-cd(mainpath);
-
-for i = 1:length(subs)
-subfol = strcat('sub',num2str(subs(i))); % subfol = 'sub6'
-fullfol = strcat(mainpath,'/',subfol); % fullfol = '/study/ocf/mri/preprocess/Prep/subX'
-cd(fullfol);
-
-dicomdir = strcat('/study1/ocf/mri/preprocess/0',num2str(subs(i)),'/T1');
-Filter = 'BRAVO';
-stfiles = spm_select('FPList',dicomdir,Filter);
-outdir = strcat(fullfol,'/',T1name);
-cd(outdir);
-
-stfilesh = spm_dicom_headers(stfiles);
-spm_dicom_convert(stfilesh,'all','flat','img');
-
-end
-
-%% MEG T1 import; make sure .json file is removed
-
-dicomdir = strcat('/study1/ocf/mri/MEG/008Jake');
-Filter = 'BRAVO';
-stfiles = spm_select('FPList',dicomdir,Filter);
-outdir = strcat('/study1/ocf/mri/MEG/008Jake/T1');
-cd(outdir);
-
-stfilesh = spm_dicom_headers(stfiles);
-spm_dicom_convert(stfilesh,'all','flat','img');
-
-
-%% dicom import Feildmap to individual's folder
-
-subs = 28:31;
-mainpath = '/study/ocf/mri/preprocess/Prep';
-cd(mainpath);
-
-for i = 1:length(subs)
-    
-subfol = strcat('sub',num2str(subs(i))); % subfol = 'sub6'
-fullfol = strcat(mainpath,'/',subfol); % fullfol = '/study/ocf/mri/preprocess/Prep/sub6'
-cd(fullfol);
-
-    for run =3:4
-        sffiles = [];
-        swfiles = [];
-        
-        if run == 1 || run == 2
-        dicomdir = strcat('/study1/ocf/mri/preprocess/0',num2str(subs(i)),'/Fieldmap',num2str(run));
-        elseif run == 3 || run == 4
-        dicomdir = strcat('/study1/ocf/mri/preprocess/0',num2str(subs(i)),'_2/Fieldmap',num2str(run-2));   
-        end
-        
-        Filter = 'Map__3D';% import fieldmaps
-        sffiles = spm_select('FPList',dicomdir,Filter);
-
-        %Specify output directory
-        outdir = strcat(fullfol,'/Fieldmap',num2str(run));
-        
-        cd(outdir);
-        
-        sffilesh = spm_dicom_headers(sffiles);
-        spm_dicom_convert(sffilesh,'all','flat','img');
-        
-        Filter = 'WATER__3D'; % import water maps
-        swfiles = spm_select('FPList',dicomdir,Filter);
-        cd(outdir);
-        
-        swfilesh = spm_dicom_headers(swfiles);
-        spm_dicom_convert(swfilesh,'all','flat','img');
-        
-    end
-end
+% subs = [2];
+% 
+% cd(mainpath);
+% 
+% for i = 1:length(subs)%1:5
+% subfol = strcat('sub_',num2str(subs(i))); % subfol = 'sub6'
+% fullfol = strcat(mainpath,'/',subfol); % fullfol = '/study/sweat/mri/preprocess/Prep/sub6'
+% if ~exist(subfol,'dir')
+%     mkdir(strcat(mainpath,'/',subfol));
+% else
+% end
+% cd(fullfol);
+% mkdir(strcat(fullfol,'/',epi1name)); % folder: /study/ocf/mri/preprocess/Prep/sub6/PreCond
+% mkdir(strcat(fullfol,'/',epi2name));
+% mkdir(strcat(fullfol,'/',epi3name));
+% mkdir(strcat(fullfol,'/',epi4name));
+% mkdir(strcat(fullfol,'/',epi5name));
+% mkdir(strcat(fullfol,'/',epi6name));
+% % mkdir(strcat(fullfol,'/',dum1name));
+% % mkdir(strcat(fullfol,'/',dum2name));
+% % mkdir(strcat(fullfol,'/',dum3name));
+% % mkdir(strcat(fullfol,'/',dum4name));
+% % mkdir(strcat(fullfol,'/',dum5name));
+% % mkdir(strcat(fullfol,'/',dum6name));
+% mkdir(strcat(fullfol,'/',fm1name));
+% mkdir(strcat(fullfol,'/',fm2name));
+% mkdir(strcat(fullfol,'/',fm3name));
+% mkdir(strcat(fullfol,'/',fm4name));
+% mkdir(strcat(fullfol,'/',T1name));
+% end
+% 
+% %% dicom import T1 to each individual's folder 
+% %make sure .json file is removed
+% subs = [33];
+% cd(mainpath);
+% 
+% for i = 1:length(subs)
+% subfol = strcat('sub',num2str(subs(i))); % subfol = 'sub6'
+% fullfol = strcat(mainpath,'/',subfol); % fullfol = '/study/ocf/mri/preprocess/Prep/subX'
+% cd(fullfol);
+% 
+% dicomdir = strcat('/study1/ocf/mri/preprocess/0',num2str(subs(i)),'/T1');
+% Filter = 'BRAVO';
+% stfiles = spm_select('FPList',dicomdir,Filter);
+% outdir = strcat(fullfol,'/',T1name);
+% cd(outdir);
+% 
+% stfilesh = spm_dicom_headers(stfiles);
+% spm_dicom_convert(stfilesh,'all','flat','img');
+% 
+% end
+% 
+% %% MEG T1 import; make sure .json file is removed
+% 
+% dicomdir = strcat('/study1/ocf/mri/MEG/008Jake');
+% Filter = 'BRAVO';
+% stfiles = spm_select('FPList',dicomdir,Filter);
+% outdir = strcat('/study1/ocf/mri/MEG/008Jake/T1');
+% cd(outdir);
+% 
+% stfilesh = spm_dicom_headers(stfiles);
+% spm_dicom_convert(stfilesh,'all','flat','img');
+% 
+% 
+% %% dicom import Feildmap to individual's folder
+% 
+% subs = 28:31;
+% mainpath = '/study/ocf/mri/preprocess/Prep';
+% cd(mainpath);
+% 
+% for i = 1:length(subs)
+%     
+% subfol = strcat('sub',num2str(subs(i))); % subfol = 'sub6'
+% fullfol = strcat(mainpath,'/',subfol); % fullfol = '/study/ocf/mri/preprocess/Prep/sub6'
+% cd(fullfol);
+% 
+%     for run =3:4
+%         sffiles = [];
+%         swfiles = [];
+%         
+%         if run == 1 || run == 2
+%         dicomdir = strcat('/study1/ocf/mri/preprocess/0',num2str(subs(i)),'/Fieldmap',num2str(run));
+%         elseif run == 3 || run == 4
+%         dicomdir = strcat('/study1/ocf/mri/preprocess/0',num2str(subs(i)),'_2/Fieldmap',num2str(run-2));   
+%         end
+%         
+%         Filter = 'Map__3D';% import fieldmaps
+%         sffiles = spm_select('FPList',dicomdir,Filter);
+% 
+%         %Specify output directory
+%         outdir = strcat(fullfol,'/Fieldmap',num2str(run));
+%         
+%         cd(outdir);
+%         
+%         sffilesh = spm_dicom_headers(sffiles);
+%         spm_dicom_convert(sffilesh,'all','flat','img');
+%         
+%         Filter = 'WATER__3D'; % import water maps
+%         swfiles = spm_select('FPList',dicomdir,Filter);
+%         cd(outdir);
+%         
+%         swfilesh = spm_dicom_headers(swfiles);
+%         spm_dicom_convert(swfilesh,'all','flat','img');
+%         
+%     end
+% end
 
 %% dicom import EPI images
 
-subs = 17:24;
+subs = [7]%[5:9]% 11 12 15]; %17:24;
 %mainpath = '/study/ocf/mri/preprocess/Prep';
 cd(mainpath);
 
@@ -163,7 +172,7 @@ for i = 1:length(subs)
     fullfol = strcat(mainpath,'/',subfol); % fullfol = '/study/ocf/mri/preprocess/Prep/sub6'
     cd(fullfol);
     
-    for runs = 1:3
+    for runs = 5
         sfiles = [];
         
         %If you want to strcat path from local computer, use the backward
@@ -173,34 +182,35 @@ for i = 1:length(subs)
         %%More Comments: this pertains to whether you use mac/linux or
         %windows. Use "\" for window paths
         if runs == 1
-            dicomdir = strcat('/Users/bhu/Documents/OCF_fmri/preprocess/0',num2str(subs(i)),'/Precond');
+            %dicomdir = strcat('/Users/bhu/Documents/OCF_fmri/preprocess/0',num2str(subs(i)),'/Precond');
+            dicomdir = strcat('/Volumes/lilab/ocf/raw-data/0',num2str(subs(i)),'/Precond');
             outdir = strcat(fullfol,'/',epi1name);
             Filter = 'precond';
         elseif runs == 2
-            dicomdir = strcat('/Users/bhu/Documents/OCF_fmri/preprocess/0',num2str(subs(i)),'/Cond');
+            dicomdir = strcat('/Volumes/lilab/ocf/raw-data/0',num2str(subs(i)),'/Cond');
             outdir = strcat(fullfol,'/',epi2name);
             Filter = 'cond';
         elseif runs == 3
-            dicomdir = strcat('/Users/bhu/Documents/OCF_fmri/preprocess/0',num2str(subs(i)),'/Postcond');
+            dicomdir = strcat('/Volumes/lilab/ocf/raw-data/0',num2str(subs(i)),'/Postcond');
             outdir = strcat(fullfol,'/',epi3name);
             Filter = 'postcond';
-%         if runs == 4
-%             dicomdir = strcat('/Users/bhu/Documents/OCF_fmri/preprocess/0',num2str(subs(i)),'_2/Postcond2');
-%             outdir = strcat(fullfol,'/',epi4name);
-%             Filter = 'postcond';
-%         elseif runs == 5
-%             dicomdir = strcat('/Users/bhu/Documents/OCF_fmri/preprocess/0',num2str(subs(i)),'_2/Olocalizer');
-%             outdir = strcat(fullfol,'/',epi5name);
-%             Filter = 'odor';
-%         elseif runs == 6
-%             dicomdir = strcat('/Users/bhu/Documents/OCF_fmri/preprocess/0',num2str(subs(i)),'_2/Resting');
-%             outdir = strcat(fullfol,'/',epi6name);
-%             Filter = 'resting';
-%         else
-%             % dicomdir = strcat('/study1/ocf/mri/preprocess/0',num2str(subs(i)),'_2/Olocalizer2');
-%             dicomdir = '/Volumes/Elements/Sub28_PostCond_2_unzipped/Postcond2';
-%             outdir = strcat(fullfol,'/',epi7name);
-%             Filter = 'postcond';        
+        elseif runs == 4
+            dicomdir = strcat('/Volumes/lilab/ocf/raw-data/0',num2str(subs(i)),'_2/Postcond2/');
+            outdir = strcat(fullfol,'/',epi4name);
+            Filter = 'postcond';
+        elseif runs == 5
+            dicomdir = strcat('/Volumes/lilab/ocf/raw-data/00',num2str(subs(i)),'_2/Olocalizer/');
+            outdir = strcat(fullfol,'/',epi5name);
+            Filter = 'odor';
+        elseif runs == 6
+            dicomdir = strcat('/Volumes/lilab/ocf/raw-data/0',num2str(subs(i)),'_2/Resting/');
+            outdir = strcat(fullfol,'/',epi6name);
+            Filter = 'resting';
+        else
+            % dicomdir = strcat('/study1/ocf/mri/preprocess/0',num2str(subs(i)),'_2/Olocalizer2');
+            dicomdir = strcat('/Users/bhu/Documents/OCF_fmri/preprocess/00',num2str(subs(i)),'_2/Postcond2_p2/00006.postcond');
+            outdir = strcat(fullfol,'/',epi7name);
+            Filter = 'postcond';        
         end
 
         
@@ -230,7 +240,7 @@ end
 % according to the timing of collection.
 
 % Define sujects that need to do slice-time correction
-subs = [24];
+subs = [15];
 
 % These values are preset according to our needs.  If there is variation in
 % any of these, do not use the batch script for that participant; instead,
@@ -509,7 +519,7 @@ resflag.mask = 1;
 resflag.prefix = 'r';
 
 for i = 1:length(subs)
-    subfol = strcat('sub',num2str(subs(i)));
+    subfol = strcat('sub_',num2str(subs(i)));
     fullfol = strcat(mainpath,'/',subfol);
     
 % For realignment we want both sessions in the same run (not all files
@@ -1172,7 +1182,7 @@ end
 
 %mainpath = '/Volumes/Elements/OCF';
 
-subs = 24;
+subs = 37;
 
 shortTE = 7;
 longTE = 10;

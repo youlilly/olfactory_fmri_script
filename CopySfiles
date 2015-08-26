@@ -1,0 +1,37 @@
+
+for i in 18 20 22 23 26 27 28 29 30 33 35 38 37 
+do
+
+cd /Volumes/MyPassport/Backup_fMRI/OCF_Raw/mri/preprocess/Prep/sub${i}/PreCond
+cp -vf s*.* /Volumes/lilab/ocf/mri/New25/sub${i}/PrecEPI1
+
+cd /Volumes/MyPassport/Backup_fMRI/OCF_Raw/mri/preprocess/Prep/sub${i}/Cond
+cp -vf s*.* /Volumes/lilab/ocf/mri/New25/sub${i}/CondEPI2
+
+cd /Volumes/MyPassport/Backup_fMRI/OCF_Raw/mri/preprocess/Prep/sub${i}/PostCond
+cp -vf s*.* /Volumes/lilab/ocf/mri/New25/sub${i}/PostEPI3
+
+cd /Volumes/MyPassport/Backup_fMRI/OCF_Raw/mri/preprocess/Prep/sub${i}/PostCond2
+cp -vf s*.* /Volumes/lilab/ocf/mri/New25/sub${i}/P2EPI4
+
+cd /Volumes/MyPassport/Backup_fMRI/OCF_Raw/mri/preprocess/Prep/sub${i}/Olocalizer
+cp -vf s*.* /Volumes/lilab/ocf/mri/New25/sub${i}/OlEPI5
+
+cd /Volumes/MyPassport/Backup_fMRI/OCF_Raw/mri/preprocess/Prep/sub${i}/Resting
+cp -vf s*.* /Volumes/lilab/ocf/mri/New25/sub${i}/ReEPI6
+
+cd /Volumes/MyPassport/Backup_fMRI/OCF_Raw/mri/preprocess/Prep/sub${i}/Fieldmap1
+cp -vf fpm_maskedFM.* /Volumes/lilab/ocf/mri/New25/sub${i}/Fieldmap1
+
+cd /Volumes/MyPassport/Backup_fMRI/OCF_Raw/mri/preprocess/Prep/sub${i}/Fieldmap2
+cp -vf fpm_maskedFM.*  /Volumes/lilab/ocf/mri/New25/sub${i}/Fieldmap2
+
+cd /Volumes/MyPassport/Backup_fMRI/OCF_Raw/mri/preprocess/Prep/sub${i}/Fieldmap3
+cp -vf fpm_maskedFM.*  /Volumes/lilab/ocf/mri/New25/sub${i}/Fieldmap3
+
+cd /Volumes/MyPassport/Backup_fMRI/OCF_Raw/mri/preprocess/Prep/sub${i}/Fieldmap4
+cp -vf fpm_maskedFM.*  /Volumes/lilab/ocf/mri/New25/sub${i}/Fieldmap4
+
+cp -R /Volumes/MyPassport/Backup_fMRI/OCF_Raw/mri/preprocess/Prep/sub${i}/T1 /Volumes/lilab/ocf/mri/New25/sub${i}
+
+done   

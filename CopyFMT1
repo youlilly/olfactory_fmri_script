@@ -1,0 +1,17 @@
+for i in 2 3 4 5 6 7 8 9 11 12 15
+do
+cd /Volumes/MyPassport/Backup_fMRI/OCF_Raw/mri/preprocess/Prep/sub${i}/Fieldmap1
+cp -vf fpm_maskedFM.* /Volumes/lilab/ocf/mri/New25/sub${i}/Fieldmap1
+
+cd /Volumes/MyPassport/Backup_fMRI/OCF_Raw/mri/preprocess/Prep/sub${i}/Fieldmap2
+cp -vf fpm_maskedFM.*  /Volumes/lilab/ocf/mri/New25/sub${i}/Fieldmap2
+
+cd /Volumes/MyPassport/Backup_fMRI/OCF_Raw/mri/preprocess/Prep/sub${i}/Fieldmap3
+cp -vf fpm_maskedFM.*  /Volumes/lilab/ocf/mri/New25/sub${i}/Fieldmap3
+
+cd /Volumes/MyPassport/Backup_fMRI/OCF_Raw/mri/preprocess/Prep/sub${i}/Fieldmap4
+cp -vf fpm_maskedFM.*  /Volumes/lilab/ocf/mri/New25/sub${i}/Fieldmap4
+
+cp -R /Volumes/MyPassport/Backup_fMRI/OCF_Raw/mri/preprocess/Prep/sub${i}/T1 /Volumes/lilab/ocf/mri/New25/sub${i}
+
+done
